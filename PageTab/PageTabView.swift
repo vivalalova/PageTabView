@@ -81,7 +81,7 @@ struct PageTabView<Content: View>: View {
 
 struct PageTabView_Previews: PreviewProvider {
     static var previews: some View {
-//        Group {
+        Group {
             PageTabView(titles: ["tabA", "tabB", "tabC"]) {
                 Color.red.tag("try tag")
 
@@ -92,16 +92,16 @@ struct PageTabView_Previews: PreviewProvider {
             .accentColor(.yellow)
             .tint(.green)
 
-//            PageTabView(titles: ["tabA", "tabB", "tabC"]) {
-//                Color.red.tag("try tag")
-//
-//                Color.green
-//
-//                Color.blue
-//            }
-//            .accentColor(.yellow)
-//            .tint(.green)
-//            .previewDevice(.init(stringLiteral: "iPhone 8"))
-//        }
+            PageTabView(titles: ["tabA", "tabB", "tabC"]) {
+                Color.red.tag("try tag")
+
+                Color.green
+
+                Color.blue
+            }
+            .accentColor(.yellow)
+            .tint(.green)
+            .previewDevice(.init(stringLiteral: "iPhone 8"))
+        }
     }
 }

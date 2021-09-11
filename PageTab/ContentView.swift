@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         PageTabView(titles: ["tabA", "tabB", "tabC"]) {
-            Color.red.tag("try tag")
+            Color.white
 
             Color.green
 
