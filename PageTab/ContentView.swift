@@ -10,8 +10,15 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        PageTabView(titles: ["tabA", "tabB", "tabC"]) {
-            Color.white
+        PageTabView(titles: ["TabA", "TabB", "TabC"]) {
+            List {
+                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                    .redacted(reason: .placeholder)
+                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                    .redacted(reason: .placeholder)
+                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                    .redacted(reason: .placeholder)
+            }
 
             Color.green
 
