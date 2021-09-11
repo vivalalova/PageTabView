@@ -9,8 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        PageTabView(titles: ["tabA", "tabB", "tabC"]) {
+            Color.red.tag("try tag")
+
+            Color.green
+
+            Color.blue
+        }
+        .accentColor(.yellow)
+        .tint(.green)
     }
 }
 
