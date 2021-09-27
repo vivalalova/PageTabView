@@ -19,6 +19,7 @@ struct ContentView: View {
                 Text("xxxxxxxxxxxxxxxxxx").font(.headline)
                     .redacted(reason: .placeholder)
             }
+            .tabTitle(Text("TabA"))
 
             Color.green
 
