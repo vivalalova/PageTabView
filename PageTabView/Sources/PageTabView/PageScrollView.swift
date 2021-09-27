@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OffsetTabView<Content: View>: UIViewRepresentable {
+struct PageScrollView<Content: View>: UIViewRepresentable {
     typealias UIViewType = UIScrollView
 
     @Binding var offset: CGFloat
@@ -50,7 +50,7 @@ struct OffsetTabView<Content: View>: UIViewRepresentable {
 
 struct OffsetTabView_Previews: PreviewProvider {
     static var previews: some View {
-        OffsetTabView(offset: .constant(0)) {
+        PageScrollView(offset: .constant(0)) {
             Text("1")
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(Color.blue)

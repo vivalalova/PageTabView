@@ -58,7 +58,7 @@ struct PageTabView<Content: View>: View {
                 }
                 .frame(height: 44)
 
-                OffsetTabView(offset: $offset) {
+                PageScrollView(offset: $offset) {
                     self.content()
                         .frame(width: proxy.size.width)
                         // subscribe offset
