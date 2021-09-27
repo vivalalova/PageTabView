@@ -24,60 +24,67 @@ struct PageTabView<Content: View>: View {
     @State var barOffset: CGFloat = 0
     @State var numberOfPage: CGFloat = 0
 
-    public
-    var body: some View {
+    public var body: some View {
         GeometryReader { proxy in
             VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    Button {} label: {
-                        Text(titles.first ?? "")
-                            .font(.title3)
-                            .fontWeight(.medium)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    }.overlay(alignment: .bottom) {
-                        GeometryReader { proxy in
-                            Capsule()
-                                .foregroundColor(.accentColor)
-                                .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .local))
-                        }
-                        .offset(x: barOffset)
-                        .frame(height: 3)
-                        .onPreferenceChange(TabPreferenceKey.self) { rect in
-                            self.numberOfPage = proxy.size.width / rect.width
-                        }
-                    }
+                self.head(proxy)
 
-                    ForEach(self.titles.dropFirst(), id: \.self) { title in
-                        Button {} label: {
-                            Text(title)
-                                .font(.title3)
-                                .fontWeight(.medium)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        }
-                    }
-                }
-                .frame(height: 44)
+                self.contentBody(proxy)
+            }
+        }
+    }
 
-                PageScrollView(offset: $offset) {
-                    self.content()
-                        .frame(width: proxy.size.width)
-                        // subscribe offset
-                        .overlay {
-                            GeometryReader { offsetProxy in
-                                Color.clear
-                                    .preference(key: TabPreferenceKey.self, value: offsetProxy.frame(in: .global))
-                            }
-                        }
-                        // get offset
-                        .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
-                            self.barOffset = -offsetProxy.minX / numberOfPage
-                        }
+    private func head(_ proxy: GeometryProxy) -> some View {
+        HStack(spacing: 0) {
+            Button {} label: {
+                Text(titles.first ?? "")
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }.overlay(alignment: .bottom) {
+                GeometryReader { proxy in
+                    Capsule()
+                        .foregroundColor(.accentColor)
+                        .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .local))
                 }
-                // observe orientation
-                .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { output in
-                    print(output)
+                .offset(x: barOffset)
+                .frame(height: 3)
+                .onPreferenceChange(TabPreferenceKey.self) { rect in
+                    self.numberOfPage = proxy.size.width / rect.width
                 }
             }
+
+            ForEach(self.titles.dropFirst(), id: \.self) { title in
+                Button {} label: {
+                    Text(title)
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+        }
+        .frame(height: 44)
+    }
+
+    private func contentBody(_ proxy: GeometryProxy) -> some View {
+        PageScrollView(offset: $offset) {
+            self.content()
+                .frame(width: proxy.size.width)
+                // subscribe offset
+                .overlay {
+                    GeometryReader { offsetProxy in
+                        Color.clear
+                            .preference(key: TabPreferenceKey.self, value: offsetProxy.frame(in: .global))
+                    }
+                }
+                // get offset
+                .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
+                    self.barOffset = -offsetProxy.minX / numberOfPage
+                }
+        }
+        // observe orientation
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { output in
+            print(output)
         }
     }
 }
