@@ -31,9 +31,9 @@ struct PageTabView<Content: View>: View {
         }
     }
 
-    private func head(_ proxy: GeometryProxy) -> some View {
+    private func head(_ frame: GeometryProxy) -> some View {
         HStack(spacing: 0) {
-            Button(action: self.onPress(index: 0, width: proxy.size.width)) {
+            Button(action: self.onPress(index: 0, width: frame.size.width)) {
                 Text(titles.first ?? "")
                     .font(.title3)
                     .fontWeight(.medium)
@@ -49,12 +49,12 @@ struct PageTabView<Content: View>: View {
                 .frame(height: 3)
                 // Use Bar Width to calculate Button counts
                 .onPreferenceChange(TabPreferenceKey.self) { rect in
-                    self.model.numberOfPage = proxy.size.width / rect.width
+                    self.model.numberOfPage = frame.size.width / rect.width
                 }
             }
 
             ForEach(1 ..< self.titles.count) { index in
-                Button(action: self.onPress(index: index, width: proxy.size.width)) {
+                Button(action: self.onPress(index: index, width: frame.size.width)) {
                     Text(self.titles[index])
                         .font(.title3)
                         .fontWeight(.medium)
