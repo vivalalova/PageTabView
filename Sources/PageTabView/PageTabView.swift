@@ -103,32 +103,43 @@ struct PageTabView<Content: View>: View {
 }
 
 struct PageTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        PageTabView(titles: ["TabA", "TabB", "TabC"]) {
-            List {
-                Section {
-                    Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                        .redacted(reason: .placeholder)
-                    Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                        .redacted(reason: .placeholder)
-                } header: {
-                    Text("heaDer ｃ啊哈")
-                }
+    struct ExtractedView: View {
+        var body: some View {
+            PageTabView(titles: ["TabA", "TabB", "TabC"]) {
+                List {
+                    Section {
+                        Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                            .redacted(reason: .placeholder)
+                        Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                            .redacted(reason: .placeholder)
+                    } header: {
+                        Text("heaDer ｃ啊哈")
+                    }
 
-                Section {
-                    Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                        .redacted(reason: .placeholder)
+                    Section {
+                        Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                            .redacted(reason: .placeholder)
+                    }
                 }
+                .listStyle(.grouped)
+
+                Color.green
+                    .edgesIgnoringSafeArea(.bottom)
+
+                Color.blue
             }
-            .listStyle(.grouped)
-
-            Color.green
-                .edgesIgnoringSafeArea(.bottom)
-
-            Color.blue
+            .edgesIgnoringSafeArea(.bottom)
+            .accentColor(.yellow)
+            .tint(.green)
         }
-        .edgesIgnoringSafeArea(.bottom)
-        .accentColor(.yellow)
-        .tint(.green)
+    }
+
+    static var previews: some View {
+        Group {
+            ExtractedView()
+            
+            ExtractedView()
+                .dynamicTypeSize(.xxxLarge)
+        }
     }
 }
