@@ -60,7 +60,7 @@ struct PageTabView<Content: View>: View {
 
             ForEach(1 ..< self.titles.count) { i in
                 Button {
-                    let offset = CGFloat(i * 375)
+                    let offset = CGFloat(i) * proxy.size.width
                     if self.offset != offset {
                         self.offset = offset
                     }
@@ -74,6 +74,8 @@ struct PageTabView<Content: View>: View {
         }
         .frame(height: 44)
     }
+
+//    @State var orientation: UIDeviceOrientation = .portrait
 
     private func contentBody(_ proxy: GeometryProxy) -> some View {
         PageScrollView(offset: $offset) {
@@ -94,6 +96,9 @@ struct PageTabView<Content: View>: View {
         // observe orientation
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { output in
             print(output)
+//            if let int = output.userInfo?["UIDeviceOrientationRotateAnimatedUserInfoKey"] as? Int, let orientation = UIDeviceOrientation(rawValue: int) {
+//                self.orientation = orientation
+//            }
         }
     }
 }
