@@ -104,13 +104,21 @@ struct PageTabView<Content: View>: View {
 
 struct PageTabView_Previews: PreviewProvider {
     static var previews: some View {
-        PageTabView(titles: ["tabA", "tabB", "tabC"]) {
-            Color.red.tag("try tag")
+        PageTabView(titles: ["TabA", "TabB", "TabC"]) {
+            List {
+                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                    .redacted(reason: .placeholder)
+                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                    .redacted(reason: .placeholder)
+                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                    .redacted(reason: .placeholder)
+            }
 
             Color.green
-
+                .edgesIgnoringSafeArea(.bottom)
             Color.blue
         }
+        .edgesIgnoringSafeArea(.bottom)
         .accentColor(.yellow)
         .tint(.green)
     }
