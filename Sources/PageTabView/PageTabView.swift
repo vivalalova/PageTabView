@@ -65,25 +65,23 @@ struct PageTabView<Content: View>: View {
         .frame(height: 44)
     }
 
-//    @State var orientation: UIDeviceOrientation = .portrait
-
     private func contentBody(_ proxy: GeometryProxy) -> some View {
         PageScrollView(offset: $offset) {
             self.content()
                 .frame(width: proxy.size.width)
-                // subscribe offset
+                // Subscribe Offset
                 .overlay {
                     GeometryReader { offsetProxy in
                         Color.clear
                             .preference(key: TabPreferenceKey.self, value: offsetProxy.frame(in: .global))
                     }
                 }
-                // get offset
+                // Then Get Offset
                 .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
                     self.barOffset = -offsetProxy.minX / numberOfPage
                 }
         }
-        // observe orientation
+        // Observe Orientation
         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { output in
             print(output)
 //            if let int = output.userInfo?["UIDeviceOrientationRotateAnimatedUserInfoKey"] as? Int, let orientation = UIDeviceOrientation(rawValue: int) {
