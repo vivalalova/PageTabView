@@ -9,11 +9,10 @@ import SwiftUI
 
 public
 struct PageTabView<Content: View>: View {
-    @State var offset: CGFloat = 0
-
+    @State var titles: [String]
     let content: () -> Content
 
-    @State var titles: [String]
+    @State private var offset: CGFloat = 0
 
     public
     init(titles: [String], @ViewBuilder content: @escaping () -> Content) {
@@ -36,7 +35,12 @@ struct PageTabView<Content: View>: View {
 
     private func head(_ proxy: GeometryProxy) -> some View {
         HStack(spacing: 0) {
-            Button {} label: {
+            Button {
+                let offset: CGFloat = 0
+                if self.offset != offset {
+                    self.offset = offset
+                }
+            } label: {
                 Text(titles.first ?? "")
                     .font(.title3)
                     .fontWeight(.medium)
@@ -54,9 +58,14 @@ struct PageTabView<Content: View>: View {
                 }
             }
 
-            ForEach(self.titles.dropFirst(), id: \.self) { title in
-                Button {} label: {
-                    Text(title)
+            ForEach(1 ..< self.titles.count) { i in
+                Button {
+                    let offset = CGFloat(i * 375)
+                    if self.offset != offset {
+                        self.offset = offset
+                    }
+                } label: {
+                    Text(self.titles[i])
                         .font(.title3)
                         .fontWeight(.medium)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)

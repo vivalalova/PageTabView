@@ -8,9 +8,12 @@
 import SwiftUI
 
 struct PageScrollView<Content: View>: UIViewRepresentable {
+    typealias Context = UIViewRepresentableContext<PageScrollView>
+
     typealias UIViewType = UIScrollView
 
     @Binding var offset: CGFloat
+
     var content: () -> Content
 
     init(offset: Binding<CGFloat>, @ViewBuilder content: @escaping () -> Content) {
@@ -42,10 +45,35 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
             hostView.view.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
         ])
 
+        scrollView.delegate = context.coordinator
+
         return scrollView
     }
 
-    func updateUIView(_ uiView: UIViewType, context: Context) {}
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        if uiView.contentOffset.x != self.offset {
+            UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut) {
+                uiView.contentOffset.x = offset
+            }.startAnimation()
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, UIScrollViewDelegate {
+        let view: PageScrollView
+        init(_ scrollView: PageScrollView) {
+            self.view = scrollView
+        }
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            if self.view.offset != scrollView.contentOffset.x {
+                self.view.offset = scrollView.contentOffset.x
+            }
+        }
+    }
 }
 
 struct OffsetTabView_Previews: PreviewProvider {
