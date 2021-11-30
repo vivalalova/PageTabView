@@ -35,12 +35,7 @@ struct PageTabView<Content: View>: View {
 
     private func head(_ proxy: GeometryProxy) -> some View {
         HStack(spacing: 0) {
-            Button {
-                let offset: CGFloat = 0
-                if self.offset != offset {
-                    self.offset = offset
-                }
-            } label: {
+            Button(action: self.onPress(0, width: proxy.size.width)) {
                 Text(titles.first ?? "")
                     .font(.title3)
                     .fontWeight(.medium)
@@ -58,14 +53,9 @@ struct PageTabView<Content: View>: View {
                 }
             }
 
-            ForEach(1 ..< self.titles.count) { i in
-                Button {
-                    let offset = CGFloat(i) * proxy.size.width
-                    if self.offset != offset {
-                        self.offset = offset
-                    }
-                } label: {
-                    Text(self.titles[i])
+            ForEach(1 ..< self.titles.count) { index in
+                Button(action: self.onPress(index, width: proxy.size.width)) {
+                    Text(self.titles[index])
                         .font(.title3)
                         .fontWeight(.medium)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -99,6 +89,15 @@ struct PageTabView<Content: View>: View {
 //            if let int = output.userInfo?["UIDeviceOrientationRotateAnimatedUserInfoKey"] as? Int, let orientation = UIDeviceOrientation(rawValue: int) {
 //                self.orientation = orientation
 //            }
+        }
+    }
+
+    private func onPress(_ i: Int, width: CGFloat) -> () -> Void {
+        return {
+            let offset = CGFloat(i) * width
+            if self.offset != offset {
+                self.offset = offset
+            }
         }
     }
 }
