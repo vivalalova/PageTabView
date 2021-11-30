@@ -106,13 +106,21 @@ struct PageTabView_Previews: PreviewProvider {
     static var previews: some View {
         PageTabView(titles: ["TabA", "TabB", "TabC"]) {
             List {
-                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                    .redacted(reason: .placeholder)
-                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                    .redacted(reason: .placeholder)
-                Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                    .redacted(reason: .placeholder)
+                Section {
+                    Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                        .redacted(reason: .placeholder)
+                    Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                        .redacted(reason: .placeholder)
+                } header: {
+                    Text("heaDer ｃ啊哈")
+                }
+
+                Section {
+                    Text("xxxxxxxxxxxxxxxxxx").font(.headline)
+                        .redacted(reason: .placeholder)
+                }
             }
+            .listStyle(.grouped)
 
             Color.green
                 .edgesIgnoringSafeArea(.bottom)
