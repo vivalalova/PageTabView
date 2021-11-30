@@ -42,12 +42,12 @@ struct PageTabView<Content: View>: View {
                 GeometryReader { proxy in
                     Capsule()
                         .foregroundColor(.accentColor)
-                        // Subscribe Button Width
+                        // Subscribe Bar Width
                         .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .local))
                 }
                 .offset(x: model.barOffset)
                 .frame(height: 3)
-                // Use Button Width to calculate Button counts
+                // Use Bar Width to calculate Button counts
                 .onPreferenceChange(TabPreferenceKey.self) { rect in
                     self.model.numberOfPage = proxy.size.width / rect.width
                 }
