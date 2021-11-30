@@ -121,10 +121,14 @@ struct PageTabView_Previews: PreviewProvider {
                 }
             }
             .listStyle(.grouped)
+            .tab("TabA")
 
             Color.green
+                .tab("TabB")
                 .edgesIgnoringSafeArea(.bottom)
+
             Color.blue
+                .tab("TabC")
         }
         .edgesIgnoringSafeArea(.bottom)
         .accentColor(.yellow)
