@@ -50,7 +50,13 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
         return scrollView
     }
 
-    func updateUIView(_ uiView: UIViewType, context: Context) {}
+    func updateUIView(_ uiView: UIViewType, context: Context) {
+        if uiView.contentOffset.x != self.offset {
+            UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut) {
+                uiView.contentOffset.x = offset
+            }.startAnimation()
+        }
+    }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
