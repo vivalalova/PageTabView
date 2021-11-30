@@ -35,7 +35,7 @@ struct PageTabView<Content: View>: View {
 
     private func head(_ proxy: GeometryProxy) -> some View {
         HStack(spacing: 0) {
-            Button(action: self.onPress(0, width: proxy.size.width)) {
+            Button(action: self.onPress(index: 0, width: proxy.size.width)) {
                 Text(titles.first ?? "")
                     .font(.title3)
                     .fontWeight(.medium)
@@ -54,7 +54,7 @@ struct PageTabView<Content: View>: View {
             }
 
             ForEach(1 ..< self.titles.count) { index in
-                Button(action: self.onPress(index, width: proxy.size.width)) {
+                Button(action: self.onPress(index: index, width: proxy.size.width)) {
                     Text(self.titles[index])
                         .font(.title3)
                         .fontWeight(.medium)
@@ -92,9 +92,9 @@ struct PageTabView<Content: View>: View {
         }
     }
 
-    private func onPress(_ i: Int, width: CGFloat) -> () -> Void {
+    private func onPress(index: Int, width: CGFloat) -> () -> Void {
         return {
-            let offset = CGFloat(i) * width
+            let offset = CGFloat(index) * width
             if self.offset != offset {
                 self.offset = offset
             }
@@ -137,7 +137,7 @@ struct PageTabView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ExtractedView()
-            
+
             ExtractedView()
                 .dynamicTypeSize(.xxxLarge)
         }
