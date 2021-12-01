@@ -119,26 +119,30 @@ struct PageTabView_Previews: PreviewProvider {
                 List {
                     Section {
                         Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                        // iOS 14
-//                            .redacted(reason: .placeholder)
                         Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                        // iOS 14
-//                            .redacted(reason: .placeholder)
                     } header: {
                         Text("heaDer ｃ啊哈")
                     }
 
                     Section {
                         Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-//                            .redacted(reason: .placeholder)
                     }
                 }
                 .listStyle(.grouped)
+                .tabItem {
+                    Text("tabA")
+                }
 
                 Color.green
                     .edgesIgnoringSafeArea(.bottom)
+                    .tabItem {
+                        Text("tabB")
+                    }
 
                 Color.blue
+                    .tabItem {
+                        Text("tabC")
+                    }
             }
             .edgesIgnoringSafeArea(.bottom)
             .accentColor(.green)
@@ -147,11 +151,6 @@ struct PageTabView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        Group {
-            ExtractedView()
-
-            ExtractedView()
-//                .dynamicTypeSize(.xxxLarge)
-        }
+        ExtractedView()
     }
 }
