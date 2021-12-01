@@ -33,33 +33,35 @@ struct PageTabView<Content: View>: View {
 
     private func head(_ frame: GeometryProxy) -> some View {
         HStack(spacing: 0) {
-            Button(action: self.onPress(index: 0, width: frame.size.width)) {
-                Text(titles.first ?? "")
-                    .font(.title)
-                    .fontWeight(.medium)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-            .overlay(
-                GeometryReader { proxy in
-                    Capsule()
-                        .foregroundColor(.accentColor)
-                        // Subscribe Bar Width
-                        .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .local))
-                }
-                .offset(x: model.barOffset)
-                .frame(height: 3)
-                // Use Bar Width to calculate Button counts
-                .onPreferenceChange(TabPreferenceKey.self) { rect in
-                    self.model.numberOfPage = frame.size.width / rect.width
-                }, alignment: .bottom
-            )
-
-            ForEach(1 ..< self.titles.count) { index in
-                Button(action: self.onPress(index: index, width: frame.size.width)) {
-                    Text(self.titles[index])
-                        .font(.title)
-                        .fontWeight(.medium)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+            ForEach(0 ..< self.titles.count) { index in
+                if index == 0 {
+                    Button(action: self.onPress(index: 0, width: frame.size.width)) {
+                        Text(titles.first ?? "")
+                            .font(.title)
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                    .overlay(
+                        GeometryReader { proxy in
+                            Capsule()
+                                .foregroundColor(.accentColor)
+                                // Subscribe Bar Width
+                                .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .local))
+                        }
+                        .offset(x: model.barOffset)
+                        .frame(height: 3)
+                        // Use Bar Width to calculate Button counts
+                        .onPreferenceChange(TabPreferenceKey.self) { rect in
+                            self.model.numberOfPage = frame.size.width / rect.width
+                        }, alignment: .bottom
+                    )
+                } else {
+                    Button(action: self.onPress(index: index, width: frame.size.width)) {
+                        Text(self.titles[index])
+                            .font(.title)
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                 }
             }
         }
