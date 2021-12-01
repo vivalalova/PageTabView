@@ -38,7 +38,8 @@ struct PageTabView<Content: View>: View {
                     .font(.title3)
                     .fontWeight(.medium)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }.overlay(alignment: .bottom) {
+            }
+            .overlay(
                 GeometryReader { proxy in
                     Capsule()
                         .foregroundColor(.accentColor)
@@ -50,8 +51,8 @@ struct PageTabView<Content: View>: View {
                 // Use Bar Width to calculate Button counts
                 .onPreferenceChange(TabPreferenceKey.self) { rect in
                     self.model.numberOfPage = frame.size.width / rect.width
-                }
-            }
+                }, alignment: .bottom
+            )
 
             ForEach(1 ..< self.titles.count) { index in
                 Button(action: self.onPress(index: index, width: frame.size.width)) {
@@ -70,12 +71,12 @@ struct PageTabView<Content: View>: View {
             self.content()
                 .frame(width: proxy.size.width)
                 // Subscribe ScrollView ContentOffset
-                .overlay {
+                .overlay(
                     GeometryReader { offsetProxy in
                         Color.clear
                             .preference(key: TabPreferenceKey.self, value: offsetProxy.frame(in: .global))
                     }
-                }
+                )
                 // Then Set Offset
                 .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
                     self.model.barOffset = -offsetProxy.minX / model.numberOfPage
@@ -135,8 +136,8 @@ struct PageTabView_Previews: PreviewProvider {
                 Color.blue
             }
             .edgesIgnoringSafeArea(.bottom)
-            .accentColor(.yellow)
-            .tint(.green)
+            .accentColor(.green)
+            // .tint(.green)
         }
     }
 
@@ -145,7 +146,7 @@ struct PageTabView_Previews: PreviewProvider {
             ExtractedView()
 
             ExtractedView()
-                .dynamicTypeSize(.xxxLarge)
+//                .dynamicTypeSize(.xxxLarge)
         }
     }
 }
