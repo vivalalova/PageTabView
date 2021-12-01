@@ -10,7 +10,7 @@ import SwiftUI
 
 public
 struct PageTabView<Content: View>: View {
-    @StateObject var model = Model()
+    @ObservedObject var model = Model()
 
     @State var titles: [String]
     let content: () -> Content
@@ -35,7 +35,7 @@ struct PageTabView<Content: View>: View {
         HStack(spacing: 0) {
             Button(action: self.onPress(index: 0, width: frame.size.width)) {
                 Text(titles.first ?? "")
-                    .font(.title3)
+                    .font(.title)
                     .fontWeight(.medium)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -57,7 +57,7 @@ struct PageTabView<Content: View>: View {
             ForEach(1 ..< self.titles.count) { index in
                 Button(action: self.onPress(index: index, width: frame.size.width)) {
                     Text(self.titles[index])
-                        .font(.title3)
+                        .font(.title)
                         .fontWeight(.medium)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -116,16 +116,18 @@ struct PageTabView_Previews: PreviewProvider {
                 List {
                     Section {
                         Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                            .redacted(reason: .placeholder)
+                        // iOS 14
+//                            .redacted(reason: .placeholder)
                         Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                            .redacted(reason: .placeholder)
+                        // iOS 14
+//                            .redacted(reason: .placeholder)
                     } header: {
                         Text("heaDer ｃ啊哈")
                     }
 
                     Section {
                         Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                            .redacted(reason: .placeholder)
+//                            .redacted(reason: .placeholder)
                     }
                 }
                 .listStyle(.grouped)
