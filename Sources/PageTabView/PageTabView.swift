@@ -22,18 +22,18 @@ struct PageTabView<Content: View>: View {
     }
 
     public var body: some View {
-        GeometryReader { proxy in
+        GeometryReader { frame in
             VStack(spacing: 0) {
-                self.head(proxy)
+                Head(frame)
 
-                self.contentBody(proxy)
+                ContentBody(frame)
             }
         }
     }
-    
-    private func head(_ frame: GeometryProxy) -> some View {
+
+    private func Head(_ frame: GeometryProxy) -> some View {
         func Btn(_ index: Int) -> some View {
-            Button(action: self.onPress(index: index, width: frame.size.width)) {
+            Button(action: self.model.onPress(index: index, width: frame.size.width)) {
                 Text(self.titles[index])
                     .font(.title)
                     .fontWeight(.medium)
@@ -69,7 +69,7 @@ struct PageTabView<Content: View>: View {
         .frame(height: 44)
     }
 
-    private func contentBody(_ proxy: GeometryProxy) -> some View {
+    private func ContentBody(_ proxy: GeometryProxy) -> some View {
         PageScrollView(offset: $model.offset) {
             self.content()
                 .frame(width: proxy.size.width)
@@ -93,15 +93,6 @@ struct PageTabView<Content: View>: View {
 //            }
         }
     }
-
-    private func onPress(index: Int, width: CGFloat) -> () -> Void {
-        return {
-            let offset = CGFloat(index) * width
-            if self.model.offset != offset {
-                self.model.offset = offset
-            }
-        }
-    }
 }
 
 extension PageTabView {
@@ -109,6 +100,15 @@ extension PageTabView {
         @Published var barOffset: CGFloat = 0
         @Published var numberOfPage: CGFloat = 0
         @Published var offset: CGFloat = 0
+
+        func onPress(index: Int, width: CGFloat) -> () -> Void {
+            return {
+                let offset = CGFloat(index) * width
+                if self.offset != offset {
+                    self.offset = offset
+                }
+            }
+        }
     }
 }
 
