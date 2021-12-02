@@ -136,37 +136,19 @@ struct PageTabView_Previews: PreviewProvider {
     struct ExtractedView: View {
         var body: some View {
             PageTabView {
-                Text("TabA")
-                Text("TabB")
-                Text("TabC")
+                Text("red").foregroundColor(.red)
+                Text("green").foregroundColor(.green)
+                Text("blue").foregroundColor(.blue)
+                Text("yellow").foregroundColor(.yellow)
             } content: {
-                List {
-                    Section {
-                        Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                        Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                    } header: {
-                        Text("!!!!!!!!!!!!!!!!!!!!!!!")
-                            .padding([.horizontal, .bottom], 4)
-                    }
-
-                    Section {
-                        Text("xxxxxxxxxxxxxxxxxx").font(.headline)
-                    }
-                }
-                .listStyle(.grouped)
+                Color.red
 
                 Color.green
-                    .edgesIgnoringSafeArea(.bottom)
-                    .tabItem {
-                        Text("tabB")
-                    }
 
                 Color.blue
-                    .tabItem {
-                        Text("tabC")
-                    }
+
+                Color.yellow
             }
-            .edgesIgnoringSafeArea(.bottom)
             .accentColor(.green)
         }
     }
