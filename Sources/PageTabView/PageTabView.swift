@@ -12,12 +12,34 @@ public
 struct PageTabView<Content: View>: View {
     @ObservedObject var model = Model()
 
-    @State var titles: [String]
+    let titles: [AnyView]
     let content: () -> Content
 
     public
-    init(titles: [String], @ViewBuilder content: @escaping () -> Content) {
-        self.titles = titles
+    init<V0: View, V1: View>(@ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>, @ViewBuilder content: @escaping () -> Content) {
+        let cv = titleView().value
+        self.titles = [AnyView(cv.0), AnyView(cv.1)]
+        self.content = content
+    }
+
+    public
+    init<V0: View, V1: View, V2: View>(@ViewBuilder titleView: @escaping () -> TupleView<(V0, V1, V2)>, @ViewBuilder content: @escaping () -> Content) {
+        let cv = titleView().value
+        self.titles = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2)]
+        self.content = content
+    }
+
+    public
+    init<V0: View, V1: View, V2: View, V3: View>(@ViewBuilder titleView: @escaping () -> TupleView<(V0, V1, V2, V3)>, @ViewBuilder content: @escaping () -> Content) {
+        let cv = titleView().value
+        self.titles = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2), AnyView(cv.3)]
+        self.content = content
+    }
+
+    public
+    init<V0: View, V1: View, V2: View, V3: View, V4: View>(@ViewBuilder titleView: @escaping () -> TupleView<(V0, V1, V2, V3, V4)>, @ViewBuilder content: @escaping () -> Content) {
+        let cv = titleView().value
+        self.titles = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2), AnyView(cv.3), AnyView(cv.4)]
         self.content = content
     }
 
@@ -34,9 +56,7 @@ struct PageTabView<Content: View>: View {
     private func Head(_ frame: GeometryProxy) -> some View {
         func Btn(_ index: Int) -> some View {
             Button(action: self.model.onPress(index: index, width: frame.size.width)) {
-                Text(self.titles[index])
-                    .font(.title)
-                    .fontWeight(.medium)
+                self.titles[index]
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
@@ -115,13 +135,18 @@ extension PageTabView {
 struct PageTabView_Previews: PreviewProvider {
     struct ExtractedView: View {
         var body: some View {
-            PageTabView(titles: ["TabA", "TabB", "TabC"]) {
+            PageTabView {
+                Text("TabA")
+                Text("TabB")
+                Text("TabC")
+            } content: {
                 List {
                     Section {
                         Text("xxxxxxxxxxxxxxxxxx").font(.headline)
                         Text("xxxxxxxxxxxxxxxxxx").font(.headline)
                     } header: {
-                        Text("heaDer ｃ啊哈")
+                        Text("!!!!!!!!!!!!!!!!!!!!!!!")
+                            .padding([.horizontal, .bottom], 4)
                     }
 
                     Section {
@@ -129,9 +154,6 @@ struct PageTabView_Previews: PreviewProvider {
                     }
                 }
                 .listStyle(.grouped)
-                .tabItem {
-                    Text("tabA")
-                }
 
                 Color.green
                     .edgesIgnoringSafeArea(.bottom)
@@ -146,7 +168,6 @@ struct PageTabView_Previews: PreviewProvider {
             }
             .edgesIgnoringSafeArea(.bottom)
             .accentColor(.green)
-            // .tint(.green)
         }
     }
 
