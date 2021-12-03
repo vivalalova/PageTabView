@@ -13,33 +13,15 @@ struct PageTabView<Content: View>: View {
     @ObservedObject var model = Model()
 
     let titles: [AnyView]
-    let content: () -> Content
+    let content: (Model) -> Content
 
     public
-    init<V0: View, V1: View>(@ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>, @ViewBuilder content: @escaping () -> Content) {
+    init<V0: View, V1: View>(
+        @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
+        @ViewBuilder content: @escaping (Model) -> Content
+    ) {
         let cv = titleView().value
         self.titles = [AnyView(cv.0), AnyView(cv.1)]
-        self.content = content
-    }
-
-    public
-    init<V0: View, V1: View, V2: View>(@ViewBuilder titleView: @escaping () -> TupleView<(V0, V1, V2)>, @ViewBuilder content: @escaping () -> Content) {
-        let cv = titleView().value
-        self.titles = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2)]
-        self.content = content
-    }
-
-    public
-    init<V0: View, V1: View, V2: View, V3: View>(@ViewBuilder titleView: @escaping () -> TupleView<(V0, V1, V2, V3)>, @ViewBuilder content: @escaping () -> Content) {
-        let cv = titleView().value
-        self.titles = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2), AnyView(cv.3)]
-        self.content = content
-    }
-
-    public
-    init<V0: View, V1: View, V2: View, V3: View, V4: View>(@ViewBuilder titleView: @escaping () -> TupleView<(V0, V1, V2, V3, V4)>, @ViewBuilder content: @escaping () -> Content) {
-        let cv = titleView().value
-        self.titles = [AnyView(cv.0), AnyView(cv.1), AnyView(cv.2), AnyView(cv.3), AnyView(cv.4)]
         self.content = content
     }
 
@@ -49,6 +31,8 @@ struct PageTabView<Content: View>: View {
                 Head(frame)
 
                 ContentBody(frame)
+            }.onAppear {
+                self.model.width = frame.size.width
             }
         }
     }
@@ -72,7 +56,7 @@ struct PageTabView<Content: View>: View {
             .frame(height: 3)
             // Use Bar Width to calculate Button counts
             .onPreferenceChange(TabPreferenceKey.self) { rect in
-                self.model.numberOfPage = frame.size.width / rect.width
+                self.model.numberOfPage = Int(frame.size.width / rect.width)
             }
         }
 
@@ -90,8 +74,8 @@ struct PageTabView<Content: View>: View {
     }
 
     private func ContentBody(_ proxy: GeometryProxy) -> some View {
-        PageScrollView(offset: $model.offset) {
-            self.content()
+        PageScrollView(offset: self.$model.offset) {
+            self.content(self.model)
                 .frame(width: proxy.size.width)
                 // Subscribe ScrollView ContentOffset
                 .overlay(
@@ -102,32 +86,8 @@ struct PageTabView<Content: View>: View {
                 )
                 // Then Set Offset
                 .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
-                    self.model.barOffset = -offsetProxy.minX / model.numberOfPage
+                    self.model.barOffset = -offsetProxy.minX / CGFloat(model.numberOfPage)
                 }
-        }
-        // Observe Orientation
-        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { output in
-            print(output)
-//            if let int = output.userInfo?["UIDeviceOrientationRotateAnimatedUserInfoKey"] as? Int, let orientation = UIDeviceOrientation(rawValue: int) {
-//                self.orientation = orientation
-//            }
-        }
-    }
-}
-
-extension PageTabView {
-    class Model: ObservableObject {
-        @Published var barOffset: CGFloat = 0
-        @Published var numberOfPage: CGFloat = 0
-        @Published var offset: CGFloat = 0
-
-        func onPress(index: Int, width: CGFloat) -> () -> Void {
-            return {
-                let offset = CGFloat(index) * width
-                if self.offset != offset {
-                    self.offset = offset
-                }
-            }
         }
     }
 }
@@ -138,18 +98,12 @@ struct PageTabView_Previews: PreviewProvider {
             PageTabView {
                 Text("red").foregroundColor(.red)
                 Text("green").foregroundColor(.green)
-                Text("blue").foregroundColor(.blue)
-                Text("yellow").foregroundColor(.yellow)
-            } content: {
+            } content: { _ in
                 Color.red
 
                 Color.green
-
-                Color.blue
-
-                Color.yellow
             }
-            .accentColor(.green)
+            .accentColor(.yellow)
         }
     }
 

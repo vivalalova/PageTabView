@@ -51,6 +51,8 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIViewType, context: Context) {
+        uiView.isScrollEnabled = true
+
         if uiView.contentOffset.x != self.offset {
             UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut) {
                 uiView.contentOffset.x = offset
@@ -61,7 +63,9 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
+}
 
+extension PageScrollView {
     class Coordinator: NSObject, UIScrollViewDelegate {
         let view: PageScrollView
         init(_ scrollView: PageScrollView) {
@@ -72,24 +76,6 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
             if self.view.offset != scrollView.contentOffset.x {
                 self.view.offset = scrollView.contentOffset.x
             }
-        }
-    }
-}
-
-struct OffsetTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        PageScrollView(offset: .constant(0)) {
-            Text("1")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.blue)
-
-            Text("2")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.red)
-
-            Text("3")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.yellow)
         }
     }
 }
