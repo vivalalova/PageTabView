@@ -103,12 +103,20 @@ struct PageTabView_Previews: PreviewProvider {
             PageTabView {
                 Text("red").foregroundColor(.red)
                 Text("green").foregroundColor(.green)
-            } content: { _ in
-                Color.red
+            } content: { model in
+                VStack {
+                    Button("red") {
+                        model.page = 1
+                    }
+                }
 
-                Color.green
+                VStack {
+                    Button("green") {
+                        model.page = 0
+                    }
+                }
             }
-            .accentColor(.yellow)
+            .accentColor(.black)
         }
     }
 
