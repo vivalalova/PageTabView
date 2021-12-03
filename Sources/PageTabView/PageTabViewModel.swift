@@ -13,10 +13,10 @@ public extension PageTabView {
     final class Model: ObservableObject {
         @Published var barOffset: CGFloat = 0
         @Published var numberOfPage: Int = 0
-        @Published var offset: CGFloat = 0
         @Published var width: CGFloat = 0
 
-        @Published var page: Int = 0
+        @Published var offset: CGFloat = 0
+        @Published public var page: Int = 0
 
         var bag = Set<AnyCancellable>()
 
