@@ -57,7 +57,10 @@ struct PageTabView<Content: View>: View {
             .frame(height: 3)
             // Use Bar Width to calculate Button counts
             .onPreferenceChange(TabPreferenceKey.self) { rect in
-                self.model.numberOfPage = Int(frame.size.width / rect.width)
+                let number = frame.size.width / rect.width
+                if !(number.isNaN || number.isInfinite) {
+                    self.model.numberOfPage = Int(number)
+                }
             }
         }
 
