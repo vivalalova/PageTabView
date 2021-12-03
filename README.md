@@ -2,6 +2,9 @@
 
 Page tab
 
+![111](./resource/demo.gif)
+
+### Usage
 
 ```swift
 PageTabView {
