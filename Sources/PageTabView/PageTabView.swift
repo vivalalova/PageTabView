@@ -32,9 +32,12 @@ struct PageTabView<Content: View>: View {
                 Head(frame)
 
                 ContentBody(frame)
+                    .id(model.orientation.rawValue)
             }.onAppear {
                 self.model.width = frame.size.width
             }
+        }.onRotate { newOrientation in
+            model.orientation = newOrientation
         }
     }
 

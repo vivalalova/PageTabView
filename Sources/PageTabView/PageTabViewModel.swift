@@ -18,6 +18,8 @@ public extension PageTabView {
         @Published var offset: CGFloat = 0
         @Published public var page: Int = 0
 
+        @Published var orientation = UIDeviceOrientation.unknown
+
         var bag = Set<AnyCancellable>()
 
         init() {
