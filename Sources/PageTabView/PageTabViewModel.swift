@@ -8,6 +8,7 @@
 import Combine
 import SwiftUI
 
+@available(iOS 13.0.0, *)
 public extension PageTabView {
     final class Model: ObservableObject {
         @Published var barOffset: CGFloat = 0

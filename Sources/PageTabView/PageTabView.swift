@@ -8,6 +8,7 @@
 import Combine
 import SwiftUI
 
+@available(iOS 13.0.0, *)
 public
 struct PageTabView<Content: View>: View {
     @ObservedObject var model = Model()
@@ -92,6 +93,7 @@ struct PageTabView<Content: View>: View {
     }
 }
 
+@available(iOS 13.0.0, *)
 struct PageTabView_Previews: PreviewProvider {
     struct ExtractedView: View {
         var body: some View {

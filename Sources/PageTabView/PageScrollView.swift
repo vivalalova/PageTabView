@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@available(iOS 13.0.0, *)
 struct PageScrollView<Content: View>: UIViewRepresentable {
     typealias Context = UIViewRepresentableContext<PageScrollView>
 
@@ -65,6 +66,7 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
     }
 }
 
+@available(iOS 13.0.0, *)
 extension PageScrollView {
     class Coordinator: NSObject, UIScrollViewDelegate {
         let view: PageScrollView
