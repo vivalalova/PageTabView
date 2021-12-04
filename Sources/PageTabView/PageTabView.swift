@@ -80,7 +80,6 @@ struct PageTabView<Content: View>: View {
     private func ContentBody(_ proxy: GeometryProxy) -> some View {
         PageScrollView(offset: self.$model.offset) {
             self.content(self.model)
-                .frame(width: proxy.size.width)
                 // Subscribe ScrollView ContentOffset
                 .overlay(
                     GeometryReader { offsetProxy in

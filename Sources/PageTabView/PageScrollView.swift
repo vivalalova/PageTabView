@@ -43,7 +43,8 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
             hostView.view.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             hostView.view.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
 
-            hostView.view.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
+            hostView.view.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
+            hostView.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 2)
         ])
 
         scrollView.delegate = context.coordinator
