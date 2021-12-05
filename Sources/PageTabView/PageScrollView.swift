@@ -75,6 +75,7 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
 extension PageScrollView {
     class Coordinator: NSObject, UIScrollViewDelegate {
         let view: PageScrollView
+        
         init(_ scrollView: PageScrollView) {
             self.view = scrollView
         }
@@ -85,4 +86,5 @@ extension PageScrollView {
             }
         }
     }
+
 }

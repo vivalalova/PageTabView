@@ -89,6 +89,7 @@ struct PageTabView<Content: View>: View {
                 )
                 // Then Set Offset
                 .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
+                    model.numberOfPage = titles.count
                     self.model.barOffset = -offsetProxy.minX / CGFloat(model.numberOfPage)
                 }
         }
