@@ -46,7 +46,7 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
             hostView.view.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
 
             hostView.view.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
-            hostView.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: CGFloat(numberOfPage))
+            hostView.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: CGFloat(self.numberOfPage))
         ])
 
         scrollView.delegate = context.coordinator
@@ -57,8 +57,9 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
     func updateUIView(_ uiView: UIViewType, context: Context) {
         uiView.isScrollEnabled = true
 
+        let page = round(self.offset / uiView.bounds.size.width)
         if uiView.contentOffset.x != self.offset {
-            self.scrollTo(uiView, x: self.offset)
+            self.scrollTo(uiView, x: page * uiView.bounds.size.width)
         }
     }
 
@@ -85,6 +86,15 @@ extension PageScrollView {
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             if self.view.offset != scrollView.contentOffset.x {
                 self.view.offset = scrollView.contentOffset.x
+            }
+        }
+
+        /// for orientation changed
+        func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+            let page = round(self.view.offset / scrollView.bounds.size.width)
+
+            if scrollView.contentOffset.x != self.view.offset {
+                self.view.scrollTo(scrollView, x: page * scrollView.bounds.size.width)
             }
         }
     }

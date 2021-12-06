@@ -26,6 +26,7 @@ public extension PageTabView {
                 .filter { [self] _ in self.width.isNormal }
                 .map { [self] in Int(round($0 / self.width)) }
                 .removeDuplicates()
+                
                 .assign(to: \.page, on: self)
                 .store(in: &self.bag)
 
