@@ -55,7 +55,6 @@ struct PageTabView<Content: View>: View {
             VStack(spacing: 0) {
                 let _ = DispatchQueue.main.async {
                     if model.width != frame.size.width {
-                        print("iii", frame.size.width)
                         model.width = frame.size.width
                     }
                     self.model.onPageUpdate = { int in
