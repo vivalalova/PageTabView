@@ -59,7 +59,7 @@ struct PageTabView<Content: View>: View {
                         model.width = frame.size.width
                     }
                     self.model.onPageUpdate = { int in
-                        onPageUpdate(int)
+//                        onPageUpdate(int)
                     }
                 }
 
