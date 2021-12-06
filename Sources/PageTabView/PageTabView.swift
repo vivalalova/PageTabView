@@ -13,17 +13,17 @@ public
 struct PageTabView<Content: View>: View {
     @ObservedObject var model = Model()
 
-    let titles: [AnyView]
+    var titles: [AnyView] = []
     let content: (Model) -> Content
 
     public
     init<V0: View, V1: View>(
-        @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
+        @ViewBuilder titleView: @escaping (Binding<Int>) -> TupleView<(V0, V1)>,
         @ViewBuilder content: @escaping (Model) -> Content
     ) {
-        let cv = titleView().value
-        self.titles = [AnyView(cv.0), AnyView(cv.1)]
         self.content = content
+        let cv = titleView($model.page).value
+        self.titles = [AnyView(cv.0), AnyView(cv.1)]
     }
 
     public var body: some View {
@@ -32,8 +32,6 @@ struct PageTabView<Content: View>: View {
                 Head(frame)
 
                 ContentBody(frame)
-            }.onAppear {
-                self.model.width = frame.size.width
             }
         }
     }
@@ -56,12 +54,6 @@ struct PageTabView<Content: View>: View {
             .offset(x: self.model.barOffset)
             .frame(height: 3)
             // Use Bar Width to calculate Button counts
-            .onPreferenceChange(TabPreferenceKey.self) { rect in
-                let number = frame.size.width / rect.width
-                if !(number.isNaN || number.isInfinite) {
-                    self.model.numberOfPage = Int(number)
-                }
-            }
         }
 
         return HStack(spacing: 0) {
@@ -78,7 +70,7 @@ struct PageTabView<Content: View>: View {
     }
 
     private func ContentBody(_ proxy: GeometryProxy) -> some View {
-        PageScrollView(offset: self.$model.offset) {
+        PageScrollView(numberOfPage: self.titles.count, offset: self.$model.offset) {
             self.content(self.model)
                 // Subscribe ScrollView ContentOffset
                 .overlay(
@@ -89,8 +81,7 @@ struct PageTabView<Content: View>: View {
                 )
                 // Then Set Offset
                 .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
-                    model.numberOfPage = titles.count
-                    self.model.barOffset = -offsetProxy.minX / CGFloat(model.numberOfPage)
+                    self.model.barOffset = -offsetProxy.minX / CGFloat(titles.count)
                 }
         }
     }
@@ -100,19 +91,19 @@ struct PageTabView<Content: View>: View {
 struct PageTabView_Previews: PreviewProvider {
     struct ExtractedView: View {
         var body: some View {
-            PageTabView {
+            PageTabView { _ in
                 Text("red").foregroundColor(.red)
                 Text("green").foregroundColor(.green)
             } content: { model in
                 VStack {
                     Button("red") {
-                        model.page = 1
+                        model.scrollTo(page: 1)
                     }
                 }
 
                 VStack {
                     Button("green") {
-                        model.page = 0
+                        model.scrollTo(page: 0)
                     }
                 }
             }

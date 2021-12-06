@@ -12,7 +12,6 @@ import SwiftUI
 public extension PageTabView {
     final class Model: ObservableObject {
         @Published var barOffset: CGFloat = 0
-        @Published var numberOfPage: Int = 0
         @Published var width: CGFloat = 0
 
         @Published var offset: CGFloat = 0
@@ -21,11 +20,24 @@ public extension PageTabView {
         var bag = Set<AnyCancellable>()
 
         init() {
-            $page
-                .filter { [self] _ in self.width > 0 }
-                .map { [self] in CGFloat($0) * self.width }
-                .assign(to: \.offset, on: self)
+            $width.print().sink { _ in
+
+            }.store(in: &self.bag)
+
+            $offset
+                .filter { [self] _ in self.width.isNormal }
+                .map { [self] in Int(round($0 / self.width)) }
+                .removeDuplicates()
+                .assign(to: \.page, on: self)
                 .store(in: &self.bag)
+        }
+
+        public func scrollTo(page: Int) {
+            guard self.width.isNormal else {
+                return
+            }
+
+            self.offset = CGFloat(page) * self.width
         }
 
         func onPress(index: Int, width: CGFloat) -> () -> Void {

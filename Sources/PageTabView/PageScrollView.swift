@@ -13,11 +13,13 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
 
     typealias UIViewType = UIScrollView
 
+    var numberOfPage: Int
     @Binding var offset: CGFloat
 
     var content: () -> Content
 
-    init(offset: Binding<CGFloat>, @ViewBuilder content: @escaping () -> Content) {
+    init(numberOfPage: Int, offset: Binding<CGFloat>, @ViewBuilder content: @escaping () -> Content) {
+        self.numberOfPage = numberOfPage
         self.content = content
         self._offset = offset
     }
@@ -44,7 +46,7 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
             hostView.view.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
 
             hostView.view.heightAnchor.constraint(equalTo: scrollView.heightAnchor),
-            hostView.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 2)
+            hostView.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: CGFloat(numberOfPage))
         ])
 
         scrollView.delegate = context.coordinator
@@ -75,7 +77,7 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
 extension PageScrollView {
     class Coordinator: NSObject, UIScrollViewDelegate {
         let view: PageScrollView
-        
+
         init(_ scrollView: PageScrollView) {
             self.view = scrollView
         }
@@ -86,5 +88,4 @@ extension PageScrollView {
             }
         }
     }
-
 }
