@@ -9,26 +9,60 @@ import Combine
 import SwiftUI
 
 @available(iOS 13.0.0, *)
+private struct MyEnvironmentKey: EnvironmentKey {
+    static let defaultValue: (Int) -> Void = { _ in }
+}
+
+@available(iOS 13.0.0, *)
+extension EnvironmentValues {
+    var onPageUpdate: (Int) -> Void {
+        get { self[MyEnvironmentKey.self] }
+        set { self[MyEnvironmentKey.self] = newValue }
+    }
+}
+
+@available(iOS 13.0.0, *)
+public
+extension View {
+    func onPageUpdate(_ onPageUpdate: @escaping (Int) -> Void) -> some View {
+        environment(\.onPageUpdate, onPageUpdate)
+    }
+}
+
+@available(iOS 13.0.0, *)
 public
 struct PageTabView<Content: View>: View {
     @ObservedObject var model = Model()
+
+    @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
 
     var titles: [AnyView] = []
     let content: (Model) -> Content
 
     public
     init<V0: View, V1: View>(
-        @ViewBuilder titleView: @escaping (Binding<Int>) -> TupleView<(V0, V1)>,
+        @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
         @ViewBuilder content: @escaping (Model) -> Content
     ) {
         self.content = content
-        let cv = titleView($model.page).value
+        let cv = titleView().value
         self.titles = [AnyView(cv.0), AnyView(cv.1)]
+        self.model.onPageUpdate = self.onPageUpdate
     }
 
     public var body: some View {
         GeometryReader { frame in
             VStack(spacing: 0) {
+                let _ = DispatchQueue.main.async {
+                    if model.width != frame.size.width {
+                        print("iii", frame.size.width)
+                        model.width = frame.size.width
+                    }
+                    self.model.onPageUpdate = { int in
+                        onPageUpdate(int)
+                    }
+                }
+
                 Head(frame)
 
                 ContentBody(frame)
@@ -91,7 +125,7 @@ struct PageTabView<Content: View>: View {
 struct PageTabView_Previews: PreviewProvider {
     struct ExtractedView: View {
         var body: some View {
-            PageTabView { _ in
+            PageTabView {
                 Text("red").foregroundColor(.red)
                 Text("green").foregroundColor(.green)
             } content: { model in
