@@ -30,11 +30,9 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
 
-        let root = HStack(spacing: 0) {
+        let hostView = UIHostingController(rootView: HStack(spacing: 0) {
             content()
-        }
-
-        let hostView = UIHostingController(rootView: root)
+        })
 
         hostView.view.translatesAutoresizingMaskIntoConstraints = false
 
