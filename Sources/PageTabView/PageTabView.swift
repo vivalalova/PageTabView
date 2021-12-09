@@ -37,12 +37,12 @@ struct PageTabView<Content: View>: View {
     @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
 
     var titles: [AnyView] = []
-    let content: (Model) -> Content
+    let content: () -> Content
 
     public
     init<V0: View, V1: View>(
         @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
-        @ViewBuilder content: @escaping (Model) -> Content
+        @ViewBuilder content: @escaping () -> Content
     ) {
         self.content = content
         let cv = titleView().value
@@ -50,17 +50,23 @@ struct PageTabView<Content: View>: View {
         self.model.onPageUpdate = self.onPageUpdate
     }
 
+    func setup(_ frame: GeometryProxy) -> some View {
+        DispatchQueue.main.async {
+            if model.width != frame.size.width {
+                model.width = frame.size.width
+            }
+            self.model.onPageUpdate = { [self] int in
+                self.onPageUpdate(int)
+            }
+        }
+
+        return EmptyView()
+    }
+
     public var body: some View {
         GeometryReader { frame in
             VStack(spacing: 0) {
-                let _ = DispatchQueue.main.async {
-                    if model.width != frame.size.width {
-                        model.width = frame.size.width
-                    }
-                    self.model.onPageUpdate = { [self] int in
-                        self.onPageUpdate(int)
-                    }
-                }
+                setup(frame)
 
                 Head(frame)
 
@@ -104,7 +110,7 @@ struct PageTabView<Content: View>: View {
 
     private func ContentBody(_ proxy: GeometryProxy) -> some View {
         PageScrollView(numberOfPage: self.titles.count, offset: self.$model.offset) {
-            self.content(self.model)
+            self.content()
                 // Subscribe ScrollView ContentOffset
                 .overlay(
                     GeometryReader { offsetProxy in
@@ -127,7 +133,7 @@ struct PageTabView_Previews: PreviewProvider {
             PageTabView {
                 Text("red").foregroundColor(.red)
                 Text("green").foregroundColor(.green)
-            } content: { _ in
+            } content: {
                 VStack {
                     Button("red") {
 //                        model.scrollTo(page: 1)
