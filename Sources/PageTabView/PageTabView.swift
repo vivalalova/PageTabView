@@ -29,10 +29,10 @@ extension View {
     }
 }
 
-@available(iOS 13.0.0, *)
+@available(iOS 14.0.0, *)
 public
 struct PageTabView<Content: View>: View {
-    @ObservedObject var model = Model()
+    @StateObject var model = Model()
 
     @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
 
@@ -120,7 +120,7 @@ struct PageTabView<Content: View>: View {
     }
 }
 
-@available(iOS 13.0.0, *)
+@available(iOS 14.0.0, *)
 struct PageTabView_Previews: PreviewProvider {
     struct ExtractedView: View {
         var body: some View {
