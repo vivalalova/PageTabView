@@ -57,8 +57,8 @@ struct PageTabView<Content: View>: View {
                     if model.width != frame.size.width {
                         model.width = frame.size.width
                     }
-                    self.model.onPageUpdate = { int in
-//                        onPageUpdate(int)
+                    self.model.onPageUpdate = { [self] int in
+                        self.onPageUpdate(int)
                     }
                 }
 
@@ -127,18 +127,20 @@ struct PageTabView_Previews: PreviewProvider {
             PageTabView {
                 Text("red").foregroundColor(.red)
                 Text("green").foregroundColor(.green)
-            } content: { model in
+            } content: { _ in
                 VStack {
                     Button("red") {
-                        model.scrollTo(page: 1)
+//                        model.scrollTo(page: 1)
                     }
                 }
+                .frame(maxWidth: .infinity)
 
                 VStack {
                     Button("green") {
-                        model.scrollTo(page: 0)
+//                        model.scrollTo(page: 0)
                     }
                 }
+                .frame(maxWidth: .infinity)
             }
             .accentColor(.black)
         }
