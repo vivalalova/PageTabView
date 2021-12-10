@@ -9,7 +9,7 @@ import SwiftUI
 
 @available(iOS 13.0.0, *)
 struct PageScrollView<Content: View>: UIViewRepresentable {
-    typealias Context = UIViewRepresentableContext<PageScrollView>
+    typealias Context = UIViewRepresentableContext<Self>
 
     typealias UIViewType = UIScrollView
 
