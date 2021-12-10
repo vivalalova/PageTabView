@@ -65,14 +65,10 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
         Coordinator(self)
     }
 
-    @State var task: UIViewPropertyAnimator?
     func scrollTo(_ uiView: UIViewType, x: CGFloat) {
-        self.task?.stopAnimation(true)
-
-        self.task = UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut) {
-            uiView.contentOffset.x = x
-        }
-        self.task?.startAnimation()
+        var offset = uiView.contentOffset
+        offset.x = x
+        uiView.setContentOffset(offset, animated: true)
     }
 }
 
