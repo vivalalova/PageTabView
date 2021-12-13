@@ -8,10 +8,11 @@
 import SwiftUI
 
 @available(iOS 13.0.0, *)
+public
 struct TabPreferenceKey: PreferenceKey {
-    static var defaultValue = CGRect()
+    public static var defaultValue = CGRect()
 
-    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+    public static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
         value = nextValue()
     }
 }
