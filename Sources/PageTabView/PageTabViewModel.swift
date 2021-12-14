@@ -26,7 +26,6 @@ public extension PageTabView {
                 .filter { [self] _ in self.width.isNormal }
                 .map { [self] in Int(round($0 / self.width)) }
                 .removeDuplicates()
-                
                 .assign(to: \.page, on: self)
                 .store(in: &self.bag)
 
@@ -49,8 +48,10 @@ public extension PageTabView {
             return {
                 let offset = CGFloat(index) * width
                 if self.offset != offset {
-                    self.offset = offset
-                    self.barOffset = offset / width
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        self.offset = offset
+                        self.barOffset = offset / width
+                    }
                 }
             }
         }
