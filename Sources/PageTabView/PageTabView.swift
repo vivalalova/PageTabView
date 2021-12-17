@@ -10,20 +10,22 @@ import SwiftUI
 
 @available(iOS 14.0.0, *)
 public
-struct PageTabView<Content: View>: View {
+struct PageTabView: View {
     @StateObject var model = Model()
 
     @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
 
     var titles: [AnyView] = []
 
-    let content: Content
+    let content: [AnyView]
 
-    public init<V0: View, V1: View>(
+    public init<C1: View, C2: View, V0: View, V1: View>(
         @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> TupleView<(C1, C2)>
     ) {
-        self.content = content()
+        let c = content().value
+        self.content = [AnyView(c.0), AnyView(c.1)]
+
         let cv = titleView().value
         self.titles = [AnyView(cv.0), AnyView(cv.1)]
         self.model.onPageUpdate = self.onPageUpdate
@@ -98,28 +100,31 @@ extension PageTabView {
         }
     }
 
-    struct ContentView<Content: View>: View {
+    struct ContentView: View {
         var titles: [AnyView] = []
         var frame: GeometryProxy
         @EnvironmentObject var model: PageTabView.Model
 
-        var content: Content
+        var content: [AnyView]
 
         var body: some View {
             PageScrollView(numberOfPage: self.titles.count, offset: self.$model.offset) {
-                self.content
-//                    .frame(width: frame.size.width)
-                    // Subscribe ScrollView ContentOffset
-                    .overlay(
-                        GeometryReader { offsetProxy in
-                            Color.clear
-                                .preference(key: TabPreferenceKey.self, value: offsetProxy.frame(in: .global))
-                        }
-                    )
-                    // Then Set Offset
-                    .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
-                        self.model.barOffset = -offsetProxy.minX / CGFloat(titles.count)
+                HStack(spacing: 0) {
+                    ForEach(0 ..< content.count) { i in
+                        content[i]
                     }
+                }
+                // Subscribe ScrollView ContentOffset
+                .overlay(
+                    GeometryReader { offsetProxy in
+                        Color.clear
+                            .preference(key: TabPreferenceKey.self, value: offsetProxy.frame(in: .global))
+                    }
+                )
+                // Then Set Offset
+                .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
+                    self.model.barOffset = -offsetProxy.minX / CGFloat(titles.count)
+                }
             }
         }
     }
