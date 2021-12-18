@@ -145,7 +145,7 @@ struct PageTabView_Previews: PreviewProvider {
 
     static var previews: some View {
         PageTabView {
-            Text("Page1 \(page)").foregroundColor(.red)
+            Text("Page1").foregroundColor(.red)
             Text("Page2").foregroundColor(.green)
         } content: {
             List {
@@ -173,10 +173,10 @@ struct PageTabView_Previews: PreviewProvider {
             HStack {
                 Text("\(page)")
             }
-            .foregroundColor(.white)
+//            .foregroundColor(.white)
             .padding(.vertical)
             .frame(maxWidth: .infinity)
-            .background(Color.blue)
+            .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .padding()
         }
