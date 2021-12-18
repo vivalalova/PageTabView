@@ -9,8 +9,7 @@ import Combine
 import SwiftUI
 
 @available(iOS 14.0.0, *)
-public
-struct PageTabView: View {
+public struct PageTabView: View {
     @StateObject var model = Model()
 
     @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
@@ -62,48 +61,57 @@ struct PageTabView: View {
 @available(iOS 14.0.0, *)
 extension PageTabView {
     struct HeadView: View {
+        @EnvironmentObject var model: PageTabView.Model
+
         var titles: [AnyView] = []
         var frame: GeometryProxy
-        @EnvironmentObject var model: PageTabView.Model
 
         var body: some View {
             HStack(spacing: 0) {
                 ForEach(0 ..< self.titles.count) { index in
+                    let title = self.titles[index]
                     if index == 0 {
-                        Btn(index)
-                            .overlay(HorizontalBar(), alignment: .bottom)
+                        Btn(index: index, view: title, frame: frame)
+                            .overlay(HorizontalBarView(), alignment: .bottom)
                     } else {
-                        Btn(index)
+                        Btn(index: index, view: title, frame: frame)
                     }
                 }
             }
             .frame(height: 44)
         }
 
-        func HorizontalBar() -> some View {
-            GeometryReader { proxy in
-                Capsule()
-                    .foregroundColor(.accentColor)
-                    // Subscribe Bar Width
-                    .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .local))
+        struct Btn: View {
+            @EnvironmentObject var model: PageTabView.Model
+
+            var index: Int
+            var view: AnyView
+            var frame: GeometryProxy
+
+            var body: some View {
+                Button(action: self.model.onPress(index: index, width: self.frame.size.width)) {
+                    view.frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
-            .offset(x: self.model.barOffset)
-            .frame(height: 3)
-            // Use Bar Width to calculate Button counts
         }
 
-        func Btn(_ index: Int) -> some View {
-            Button(action: self.model.onPress(index: index, width: self.frame.size.width)) {
-                self.titles[index]
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+        struct HorizontalBarView: View {
+            @EnvironmentObject var model: PageTabView.Model
+
+            var body: some View {
+                Capsule()
+                    .foregroundColor(.accentColor)
+                    .offset(x: self.model.barOffset)
+                    .frame(height: 3)
             }
         }
     }
 
     struct ContentView: View {
+        @EnvironmentObject var model: PageTabView.Model
+
         var titles: [AnyView] = []
         var frame: GeometryProxy
-        @EnvironmentObject var model: PageTabView.Model
 
         var content: [AnyView]
 
@@ -112,6 +120,7 @@ extension PageTabView {
                 HStack(spacing: 0) {
                     ForEach(0 ..< content.count) { i in
                         content[i]
+                            .frame(maxWidth: .infinity)
                     }
                 }
                 // Subscribe ScrollView ContentOffset
@@ -130,27 +139,46 @@ extension PageTabView {
     }
 }
 
-@available(iOS 14.0.0, *)
+@available(iOS 15.0.0, *)
 struct PageTabView_Previews: PreviewProvider {
+    @State static var page = 0
+
     static var previews: some View {
         PageTabView {
-            Text("red").foregroundColor(.red)
-            Text("green").foregroundColor(.green)
+            Text("Page1 \(page)").foregroundColor(.red)
+            Text("Page2").foregroundColor(.green)
         } content: {
-            VStack {
-                Button("red") {
-//                    scrollTo(1)
+            List {
+                Text("Page 1")
+
+                Button("Green") {
+//                    scrollTo(0)
                 }
-            }
-            .frame(maxWidth: .infinity)
+            }.edgesIgnoringSafeArea(.bottom)
 
             VStack {
-                Button("green") {
+                Text("Page 1")
+                Button("Red") {
 //                    scrollTo(0)
                 }
             }
-            .frame(maxWidth: .infinity)
+        }
+        .onPageUpdate {
+            page = $0
         }
         .accentColor(.black)
+        .edgesIgnoringSafeArea(.bottom)
+
+        .overlay(alignment: .bottom) {
+            HStack {
+                Text("\(page)")
+            }
+            .foregroundColor(.white)
+            .padding(.vertical)
+            .frame(maxWidth: .infinity)
+            .background(Color.blue)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .padding()
+        }
     }
 }
