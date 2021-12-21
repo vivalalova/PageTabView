@@ -16,13 +16,13 @@ public struct PageTabView: View {
 
     var titles: [AnyView] = []
 
-    let content: [AnyView]
+    var content: [AnyView] = []
 
     public init<C1: View, C2: View, V0: View, V1: View>(
         @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
-        @ViewBuilder content: @escaping () -> TupleView<(C1, C2)>
+        @ViewBuilder content: @escaping (Model) -> TupleView<(C1, C2)>
     ) {
-        let c = content().value
+        let c = content(model).value
         self.content = [AnyView(c.0), AnyView(c.1)]
 
         let cv = titleView().value
@@ -32,8 +32,8 @@ public struct PageTabView: View {
 
     func setup(_ frame: GeometryProxy) -> some View {
         DispatchQueue.main.async {
-            if model.width != frame.size.width {
-                model.width = frame.size.width
+            if self.model.width != frame.size.width {
+                self.model.width = frame.size.width
             }
             self.model.onPageUpdate = { [self] int in
                 self.onPageUpdate(int)
@@ -147,12 +147,12 @@ struct PageTabView_Previews: PreviewProvider {
         PageTabView {
             Text("Page1").foregroundColor(.red)
             Text("Page2").foregroundColor(.green)
-        } content: {
+        } content: { model in
             List {
                 Text("Page 1")
 
                 Button("Green") {
-//                    scrollTo(0)
+                    model.scrollTo(page: 0)
                 }
             }.edgesIgnoringSafeArea(.bottom)
 
