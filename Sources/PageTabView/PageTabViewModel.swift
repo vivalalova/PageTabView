@@ -10,6 +10,7 @@ import SwiftUI
 
 @available(iOS 14.0.0, *)
 public extension PageTabView {
+    public
     final class Model: ObservableObject {
         @Published var barOffset: CGFloat = 0
         @Published var width: CGFloat = 0
@@ -20,6 +21,7 @@ public extension PageTabView {
 
         var bag = Set<AnyCancellable>()
 
+        public
         init(onPageUpdate: @escaping (Int) -> Void = { _ in }) {
             self.onPageUpdate = onPageUpdate
             $offset

@@ -10,7 +10,8 @@ import SwiftUI
 
 @available(iOS 14.0.0, *)
 public struct PageTabView: View {
-    @StateObject var model = Model()
+//    @StateObject var model = Model()
+    @EnvironmentObject var model: Model
 
     @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
 
@@ -20,14 +21,14 @@ public struct PageTabView: View {
 
     public init<C1: View, C2: View, V0: View, V1: View>(
         @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
-        @ViewBuilder content: @escaping (Model) -> TupleView<(C1, C2)>
+        @ViewBuilder content: @escaping () -> TupleView<(C1, C2)>
     ) {
-        let c = content(model).value
+        let c = content().value
         self.content = [AnyView(c.0), AnyView(c.1)]
 
         let cv = titleView().value
         self.titles = [AnyView(cv.0), AnyView(cv.1)]
-        self.model.onPageUpdate = self.onPageUpdate
+//        self.model.onPageUpdate = self.onPageUpdate
     }
 
     func setup(_ frame: GeometryProxy) -> some View {
@@ -147,12 +148,12 @@ struct PageTabView_Previews: PreviewProvider {
         PageTabView {
             Text("Page1").foregroundColor(.red)
             Text("Page2").foregroundColor(.green)
-        } content: { model in
+        } content: { // _ in
             List {
                 Text("Page 1")
 
                 Button("Green") {
-                    model.scrollTo(page: 0)
+//                    model.scrollTo(page: 0)
                 }
             }.edgesIgnoringSafeArea(.bottom)
 
