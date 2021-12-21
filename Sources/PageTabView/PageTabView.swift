@@ -8,52 +8,33 @@
 import Combine
 import SwiftUI
 
-@available(iOS 13.0.0, *)
-private struct MyEnvironmentKey: EnvironmentKey {
-    static let defaultValue: (Int) -> Void = { _ in }
-}
-
-@available(iOS 13.0.0, *)
-extension EnvironmentValues {
-    var onPageUpdate: (Int) -> Void {
-        get { self[MyEnvironmentKey.self] }
-        set { self[MyEnvironmentKey.self] = newValue }
-    }
-}
-
-@available(iOS 13.0.0, *)
-public
-extension View {
-    func onPageUpdate(_ onPageUpdate: @escaping (Int) -> Void) -> some View {
-        environment(\.onPageUpdate, onPageUpdate)
-    }
-}
-
 @available(iOS 14.0.0, *)
-public
-struct PageTabView<Content: View>: View {
-    @StateObject var model = Model()
+public struct PageTabView: View {
+//    @StateObject var model = Model()
+    @EnvironmentObject var model: Model
 
     @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
 
     var titles: [AnyView] = []
-    let content: () -> Content
 
-    public
-    init<V0: View, V1: View>(
+    var content: [AnyView] = []
+
+    public init<C1: View, C2: View, V0: View, V1: View>(
         @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> TupleView<(C1, C2)>
     ) {
-        self.content = content
+        let c = content().value
+        self.content = [AnyView(c.0), AnyView(c.1)]
+
         let cv = titleView().value
         self.titles = [AnyView(cv.0), AnyView(cv.1)]
-        self.model.onPageUpdate = self.onPageUpdate
+//        self.model.onPageUpdate = self.onPageUpdate
     }
 
     func setup(_ frame: GeometryProxy) -> some View {
         DispatchQueue.main.async {
-            if model.width != frame.size.width {
-                model.width = frame.size.width
+            if self.model.width != frame.size.width {
+                self.model.width = frame.size.width
             }
             self.model.onPageUpdate = { [self] int in
                 self.onPageUpdate(int)
@@ -68,49 +49,81 @@ struct PageTabView<Content: View>: View {
             VStack(spacing: 0) {
                 setup(frame)
 
-                Head(frame)
+                HeadView(titles: titles, frame: frame)
+                    .environmentObject(model)
 
-                ContentBody(frame)
+                ContentView(titles: titles, frame: frame, content: content)
+                    .environmentObject(model)
             }
         }
     }
+}
 
-    private func Head(_ frame: GeometryProxy) -> some View {
-        func Btn(_ index: Int) -> some View {
-            Button(action: self.model.onPress(index: index, width: frame.size.width)) {
-                self.titles[index]
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+@available(iOS 14.0.0, *)
+extension PageTabView {
+    struct HeadView: View {
+        @EnvironmentObject var model: PageTabView.Model
+
+        var titles: [AnyView] = []
+        var frame: GeometryProxy
+
+        var body: some View {
+            HStack(spacing: 0) {
+                ForEach(0 ..< self.titles.count) { index in
+                    let title = self.titles[index]
+                    if index == 0 {
+                        Btn(index: index, view: title, frame: frame)
+                            .overlay(HorizontalBarView(), alignment: .bottom)
+                    } else {
+                        Btn(index: index, view: title, frame: frame)
+                    }
+                }
             }
+            .frame(height: 44)
         }
 
-        func HorizontalBar() -> some View {
-            GeometryReader { proxy in
-                Capsule()
-                    .foregroundColor(.accentColor)
-                    // Subscribe Bar Width
-                    .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .local))
-            }
-            .offset(x: self.model.barOffset)
-            .frame(height: 3)
-            // Use Bar Width to calculate Button counts
-        }
+        struct Btn: View {
+            @EnvironmentObject var model: PageTabView.Model
 
-        return HStack(spacing: 0) {
-            ForEach(0 ..< self.titles.count) { index in
-                if index == 0 {
-                    Btn(index)
-                        .overlay(HorizontalBar(), alignment: .bottom)
-                } else {
-                    Btn(index)
+            var index: Int
+            var view: AnyView
+            var frame: GeometryProxy
+
+            var body: some View {
+                Button(action: self.model.onPress(index: index, width: self.frame.size.width)) {
+                    view.frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         }
-        .frame(height: 44)
+
+        struct HorizontalBarView: View {
+            @EnvironmentObject var model: PageTabView.Model
+
+            var body: some View {
+                Capsule()
+                    .foregroundColor(.accentColor)
+                    .offset(x: self.model.barOffset)
+                    .frame(height: 3)
+            }
+        }
     }
 
-    private func ContentBody(_ proxy: GeometryProxy) -> some View {
-        PageScrollView(numberOfPage: self.titles.count, offset: self.$model.offset) {
-            self.content()
+    struct ContentView: View {
+        @EnvironmentObject var model: PageTabView.Model
+
+        var titles: [AnyView] = []
+        var frame: GeometryProxy
+
+        var content: [AnyView]
+
+        var body: some View {
+            PageScrollView(numberOfPage: self.titles.count, offset: self.$model.offset) {
+                HStack(spacing: 0) {
+                    ForEach(0 ..< content.count) { i in
+                        content[i]
+                            .frame(maxWidth: .infinity)
+                    }
+                }
                 // Subscribe ScrollView ContentOffset
                 .overlay(
                     GeometryReader { offsetProxy in
@@ -122,37 +135,51 @@ struct PageTabView<Content: View>: View {
                 .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
                     self.model.barOffset = -offsetProxy.minX / CGFloat(titles.count)
                 }
+            }
         }
     }
 }
 
-@available(iOS 14.0.0, *)
+@available(iOS 15.0.0, *)
 struct PageTabView_Previews: PreviewProvider {
-    struct ExtractedView: View {
-        var body: some View {
-            PageTabView {
-                Text("red").foregroundColor(.red)
-                Text("green").foregroundColor(.green)
-            } content: {
-                VStack {
-                    Button("red") {
-//                        model.scrollTo(page: 1)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-
-                VStack {
-                    Button("green") {
-//                        model.scrollTo(page: 0)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .accentColor(.black)
-        }
-    }
+    @State static var page = 0
 
     static var previews: some View {
-        ExtractedView()
+        PageTabView {
+            Text("Page1").foregroundColor(.red)
+            Text("Page2").foregroundColor(.green)
+        } content: { // _ in
+            List {
+                Text("Page 1")
+
+                Button("Green") {
+//                    model.scrollTo(page: 0)
+                }
+            }.edgesIgnoringSafeArea(.bottom)
+
+            VStack {
+                Text("Page 1")
+                Button("Red") {
+//                    scrollTo(0)
+                }
+            }
+        }
+        .onPageUpdate {
+            page = $0
+        }
+        .accentColor(.black)
+        .edgesIgnoringSafeArea(.bottom)
+
+        .overlay(alignment: .bottom) {
+            HStack {
+                Text("\(page)")
+            }
+//            .foregroundColor(.white)
+            .padding(.vertical)
+            .frame(maxWidth: .infinity)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .padding()
+        }
     }
 }
