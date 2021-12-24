@@ -1,6 +1,6 @@
 # PageTab
 
-Page tab
+Page Tab
 
 ![111](./resource/demo.gif)
 
@@ -8,20 +8,26 @@ Page tab
 
 ```swift
 PageTabView {
-	Text("red").foregroundColor(.red)
-	Text("green").foregroundColor(.green)
-} content: { model in
-	VStack {
-		Button("red") {
-			model.page = 1
-		}
-	}
+    Text("Page1").foregroundColor(.red)
+    Text("Page2").foregroundColor(.green)
+} content: {
+    List {
+        Text("Page 1")
 
-	VStack {
-		Button("green") {
-			model.page = 0
-		}
-	}
+        Button("Green") {
+            pageModel.scrollTo(page: 1)
+        }
+        .accentColor(.blue)
+    }.edgesIgnoringSafeArea(.bottom)
+
+    VStack {
+        Text("Page 1")
+        Button("Red") {
+            pageModel.scrollTo(page: 0)
+        }
+        .accentColor(.blue)
+    }
 }
-.accentColor(.black)
+.environmentObject(pageModel)
+.accentColor(.purple)
 ```

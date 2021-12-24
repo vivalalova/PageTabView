@@ -13,7 +13,7 @@ public struct PageTabView: View {
 //    @StateObject var model = Model()
     @EnvironmentObject var model: Model
 
-    @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
+//    @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
 
     var titles: [AnyView] = []
 
@@ -36,9 +36,9 @@ public struct PageTabView: View {
             if self.model.width != frame.size.width {
                 self.model.width = frame.size.width
             }
-            self.model.onPageUpdate = { [self] int in
-                self.onPageUpdate(int)
-            }
+//            self.model.onPageUpdate = { [self] int in
+//                self.onPageUpdate(int)
+//            }
         }
 
         return EmptyView()
@@ -47,6 +47,7 @@ public struct PageTabView: View {
     public var body: some View {
         GeometryReader { frame in
             VStack(spacing: 0) {
+                Text("\(model.page)")
                 setup(frame)
 
                 HeadView(titles: titles, frame: frame)
@@ -142,44 +143,41 @@ extension PageTabView {
 
 @available(iOS 15.0.0, *)
 struct PageTabView_Previews: PreviewProvider {
-    @State static var page = 0
+    @StateObject static var pageModel = PageTabView.Model()
 
     static var previews: some View {
         PageTabView {
             Text("Page1").foregroundColor(.red)
             Text("Page2").foregroundColor(.green)
-        } content: { // _ in
+        } content: {
             List {
                 Text("Page 1")
 
                 Button("Green") {
-//                    model.scrollTo(page: 0)
+                    pageModel.scrollTo(page: 1)
                 }
+                .accentColor(.blue)
             }.edgesIgnoringSafeArea(.bottom)
 
             VStack {
                 Text("Page 1")
                 Button("Red") {
-//                    scrollTo(0)
+                    pageModel.scrollTo(page: 0)
                 }
+                .accentColor(.blue)
             }
         }
-        .onPageUpdate {
-            page = $0
-        }
-        .accentColor(.black)
+        .environmentObject(pageModel)
+        .accentColor(.purple)
         .edgesIgnoringSafeArea(.bottom)
-
         .overlay(alignment: .bottom) {
-            HStack {
-                Text("\(page)")
-            }
-//            .foregroundColor(.white)
-            .padding(.vertical)
-            .frame(maxWidth: .infinity)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            .padding()
+            Text("\(pageModel.page)")
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(.blue)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .padding()
         }
     }
 }

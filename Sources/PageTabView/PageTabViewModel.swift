@@ -10,20 +10,19 @@ import SwiftUI
 
 @available(iOS 14.0.0, *)
 public extension PageTabView {
-    public
     final class Model: ObservableObject {
         @Published var barOffset: CGFloat = 0
         @Published var width: CGFloat = 0
 
         @Published var offset: CGFloat = 0
-        @Published public var page: Int = 0
-        var onPageUpdate: (Int) -> Void
+        @Published public var page = 0
+//        var onPageUpdate: (Int) -> Void
 
         var bag = Set<AnyCancellable>()
 
         public
         init(onPageUpdate: @escaping (Int) -> Void = { _ in }) {
-            self.onPageUpdate = onPageUpdate
+//            self.onPageUpdate = onPageUpdate
             $offset
                 .filter { [self] _ in self.width.isNormal }
                 .map { [self] in Int(round($0 / self.width)) }
@@ -31,11 +30,11 @@ public extension PageTabView {
                 .assign(to: \.page, on: self)
                 .store(in: &self.bag)
 
-            $page
-                .sink { [self] in
-                    self.onPageUpdate($0)
-                }
-                .store(in: &self.bag)
+//            $page
+//                .sink { [self] in
+//                    self.onPageUpdate($0)
+//                }
+//                .store(in: &self.bag)
         }
 
         public func scrollTo(page: Int) {
