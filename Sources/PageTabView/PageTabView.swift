@@ -47,7 +47,6 @@ public struct PageTabView: View {
     public var body: some View {
         GeometryReader { frame in
             VStack(spacing: 0) {
-                Text("\(model.page)")
                 setup(frame)
 
                 HeadView(titles: titles, frame: frame)
