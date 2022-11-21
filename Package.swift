@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "PageTabView",
     platforms: [
-        .iOS(SupportedPlatform.IOSVersion.v12),
+        .iOS(SupportedPlatform.IOSVersion.v13),
         .macOS(SupportedPlatform.MacOSVersion.v10_12)
     ],
     products: [
