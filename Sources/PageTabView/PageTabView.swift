@@ -45,7 +45,7 @@ public struct PageTabView: View {
                 HeadView(titles: titles, frame: frame)
                     .environmentObject(model)
 
-                ContentView(titles: titles, frame: frame, content: content)
+                ContentView(content: content)
                     .environmentObject(model)
             }
         }
@@ -104,13 +104,10 @@ extension PageTabView {
     struct ContentView: View {
         @EnvironmentObject var model: PageTabView.Model
 
-        var titles: [AnyView] = []
-        var frame: GeometryProxy
-
         var content: [AnyView]
 
         var body: some View {
-            PageScrollView(numberOfPage: self.titles.count, offset: self.$model.offset) {
+            PageScrollView(numberOfPage: self.content.count, offset: self.$model.offset) {
                 HStack(spacing: 0) {
                     ForEach(0 ..< content.count) { i in
                         content[i]
@@ -126,7 +123,7 @@ extension PageTabView {
                 )
                 // Then Set Offset
                 .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
-                    self.model.barOffset = -offsetProxy.minX / CGFloat(titles.count)
+                    self.model.barOffset = -offsetProxy.minX / CGFloat(content.count)
                 }
             }
         }
