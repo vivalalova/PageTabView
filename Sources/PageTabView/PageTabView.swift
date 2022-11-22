@@ -10,10 +10,7 @@ import SwiftUI
 
 @available(iOS 14.0.0, *)
 public struct PageTabView: View {
-//    @StateObject var model = Model()
     @EnvironmentObject var model: Model
-
-//    @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
 
     var titles: [AnyView] = []
 
@@ -28,7 +25,6 @@ public struct PageTabView: View {
 
         let cv = titleView().value
         self.titles = [AnyView(cv.0), AnyView(cv.1)]
-//        self.model.onPageUpdate = self.onPageUpdate
     }
 
     func setup(_ frame: GeometryProxy) -> some View {
@@ -36,9 +32,6 @@ public struct PageTabView: View {
             if self.model.width != frame.size.width {
                 self.model.width = frame.size.width
             }
-//            self.model.onPageUpdate = { [self] int in
-//                self.onPageUpdate(int)
-//            }
         }
 
         return EmptyView()
