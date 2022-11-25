@@ -97,3 +97,40 @@ extension PageScrollView {
         }
     }
 }
+
+struct PageScrollView_Previews: PreviewProvider {
+    @State static var offset: CGFloat = 0
+    static let numberOfPage = 2
+
+    @ViewBuilder
+    static func content() -> some View {
+        Text("page a")
+
+        Text("page b")
+    }
+
+    static var previews: some View {
+        VStack {
+            Text("offset: \(offset)")
+
+            GeometryReader { _ in
+
+                PageScrollView(numberOfPage: numberOfPage, offset: $offset) {
+                    HStack(spacing: 0) {
+                        content()
+                            .frame(maxWidth: .infinity)
+                    }
+                    .overlay(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .global))
+                        }
+                    )
+                    .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
+                        self.offset = -offsetProxy.minX / CGFloat(numberOfPage)
+                    }
+                }
+            }
+        }
+    }
+}

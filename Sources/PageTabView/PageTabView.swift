@@ -145,7 +145,8 @@ struct PageTabView_Previews: PreviewProvider {
                 Button("Green") {
                     pageModel.scrollTo(page: 1)
                 }
-                .accentColor(.blue)
+                .accentColor(.green)
+
             }.edgesIgnoringSafeArea(.bottom)
 
             VStack {
@@ -153,7 +154,7 @@ struct PageTabView_Previews: PreviewProvider {
                 Button("Red") {
                     pageModel.scrollTo(page: 0)
                 }
-                .accentColor(.blue)
+                .accentColor(.red)
             }
         }
         .environmentObject(pageModel)
@@ -161,12 +162,14 @@ struct PageTabView_Previews: PreviewProvider {
         .edgesIgnoringSafeArea(.bottom)
         .overlay(alignment: .bottom) {
             Text("\(pageModel.page)")
-                .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(.blue)
+                .background(.yellow)
+                .foregroundColor(.black)
+                .font(.title.bold())
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .padding()
+                .shadow(radius: 8)
         }
     }
 }
