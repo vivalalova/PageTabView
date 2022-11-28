@@ -151,9 +151,11 @@ struct PageTabView_Previews: PreviewProvider {
                     pageModel.scrollTo(page: 1)
                 }
                 .accentColor(.green)
-
-            }.edgesIgnoringSafeArea(.bottom)
-                .pageTitle(Text("Page1").foregroundColor(.red))
+            }
+            .edgesIgnoringSafeArea(.bottom)
+            .pageTitle {
+                Text("Page1").foregroundColor(.red)
+            }
 
             VStack {
                 Text("Page 1")
@@ -162,7 +164,11 @@ struct PageTabView_Previews: PreviewProvider {
                 }
                 .accentColor(.red)
             }
-            .pageTitle(Text("Page2").foregroundColor(.green))
+            .pageTitle {
+                Text("Page2")
+                    .foregroundColor(.green)
+                    .overlay(Color.red.frame(width: 4, height: 4), alignment: .topTrailing)
+            }
         }
         .environmentObject(pageModel)
         .accentColor(.purple)

@@ -44,7 +44,7 @@ struct TitleViewPreferenceKey: PreferenceKey {
 }
 
 public extension View {
-    func pageTitle(_ view: any View) -> some View {
-        self.preference(key: TitleViewPreferenceKey.self, value: TitleViewPreferenceKey.Wrapper(value: view))
+    func pageTitle<Content: View>(@ViewBuilder _ view: () -> Content) -> some View {
+        self.preference(key: TitleViewPreferenceKey.self, value: TitleViewPreferenceKey.Wrapper(value: view()))
     }
 }
