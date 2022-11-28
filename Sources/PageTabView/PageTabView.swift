@@ -55,7 +55,6 @@ public extension PageTabView {
                     ForEach(0 ..< content.count) { i in
                         content[i]
                             .onPreferenceChange(TitleViewPreferenceKey.self) { v in
-                                print(v)
                                 self.titles[i] = AnyView(v.value)
                             }
                             .frame(maxWidth: .infinity)
@@ -119,7 +118,7 @@ extension PageTabView {
             var frame: GeometryProxy
 
             var body: some View {
-                Button(action: self.model.onPress(index: index, width: self.frame.size.width)) {
+                Button(action: { self.model.scrollTo(page: index) }) {
                     view.frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
@@ -131,6 +130,7 @@ extension PageTabView {
             var body: some View {
                 Capsule()
                     .foregroundColor(.accentColor)
+                    .animation(.easeOut(duration: 0.1), value: self.model.barOffset)
                     .offset(x: self.model.barOffset)
                     .frame(height: 3)
             }

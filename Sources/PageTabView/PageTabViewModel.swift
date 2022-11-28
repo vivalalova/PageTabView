@@ -36,17 +36,5 @@ public extension PageTabView {
 
             self.offset = CGFloat(page) * self.width
         }
-
-        func onPress(index: Int, width: CGFloat) -> () -> Void {
-            return {
-                let offset = CGFloat(index) * width
-                if self.offset != offset {
-                    withAnimation(.easeInOut(duration: 0.1)) {
-                        self.offset = offset
-                        self.barOffset = offset / width
-                    }
-                }
-            }
-        }
     }
 }
