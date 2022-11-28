@@ -15,12 +15,35 @@ public struct PageTabView: View {
     @State var titles: [AnyView] = [AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text(""))]
     var content: [AnyView] = []
 
-    public init<C1: View, C2: View>(@ViewBuilder content: @escaping () -> TupleView<(C1, C2)>) {
+    public init<C0: View>(@ViewBuilder content: @escaping () -> TupleView<C0>) {
+        let c = content().value
+        self.content = [AnyView(c)]
+    }
+
+    public init<C0: View, C1: View>(@ViewBuilder content: @escaping () -> TupleView<(C0, C1)>) {
         let c = content().value
         self.content = [AnyView(c.0), AnyView(c.1)]
     }
 
-    public var body: some View {
+    public init<C0: View, C1: View, C2: View>(@ViewBuilder content: @escaping () -> TupleView<(C0, C1, C2)>) {
+        let c = content().value
+        self.content = [AnyView(c.0), AnyView(c.1), AnyView(c.2)]
+    }
+
+    public init<C0: View, C1: View, C2: View, C3: View>(@ViewBuilder content: @escaping () -> TupleView<(C0, C1, C2, C3)>) {
+        let c = content().value
+        self.content = [AnyView(c.0), AnyView(c.1), AnyView(c.2), AnyView(c.3)]
+    }
+
+    public init<C0: View, C1: View, C2: View, C3: View, C4: View>(@ViewBuilder content: @escaping () -> TupleView<(C0, C1, C2, C3, C4)>) {
+        let c = content().value
+        self.content = [AnyView(c.0), AnyView(c.1), AnyView(c.2), AnyView(c.3), AnyView(c.4)]
+    }
+}
+
+@available(iOS 14.0.0, *)
+public extension PageTabView {
+    var body: some View {
         GeometryReader { frame in
             VStack(spacing: 0) {
                 setup(frame)
