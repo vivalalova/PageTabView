@@ -52,10 +52,10 @@ public extension PageTabView {
                     .environmentObject(model)
 
                 PageScrollView(numberOfPage: self.content.count, offset: self.$model.offset) {
-                    ForEach(0 ..< content.count) { i in
-                        content[i]
+                    ForEach(0 ..< content.count) { index in
+                        content[index]
                             .onPreferenceChange(TitleViewPreferenceKey.self) { v in
-                                self.titles[i] = AnyView(v.value)
+                                self.titles[index] = AnyView(v.value)
                             }
                             .frame(maxWidth: .infinity)
                     }
@@ -153,7 +153,7 @@ struct PageTabView_Previews: PreviewProvider {
                 .accentColor(.green)
             }
             .edgesIgnoringSafeArea(.bottom)
-            .pageTitle {
+            .pageTitleView {
                 Text("Page1").foregroundColor(.red)
             }
 
@@ -164,7 +164,7 @@ struct PageTabView_Previews: PreviewProvider {
                 }
                 .accentColor(.red)
             }
-            .pageTitle {
+            .pageTitleView {
                 Text("Page2")
                     .foregroundColor(.green)
                     .overlay(Color.red.frame(width: 4, height: 4), alignment: .topTrailing)

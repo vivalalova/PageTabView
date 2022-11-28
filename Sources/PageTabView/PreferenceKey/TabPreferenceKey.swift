@@ -24,27 +24,3 @@ struct PageTitlePreferenceKey: PreferenceKey {
         value = nextValue()
     }
 }
-
-// MARK: - TitleView
-
-struct TitleViewPreferenceKey: PreferenceKey {
-    static var defaultValue = Wrapper(value: Text(""))
-
-    static func reduce(value: inout Wrapper, nextValue: () -> Wrapper) {
-        value = nextValue()
-    }
-
-    struct Wrapper: Equatable {
-        var value: any View = EmptyView()
-
-        static func == (lhs: Wrapper, rhs: Wrapper) -> Bool {
-            true
-        }
-    }
-}
-
-public extension View {
-    func pageTitle<Content: View>(@ViewBuilder _ view: () -> Content) -> some View {
-        self.preference(key: TitleViewPreferenceKey.self, value: TitleViewPreferenceKey.Wrapper(value: view()))
-    }
-}
