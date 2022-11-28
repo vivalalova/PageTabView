@@ -28,7 +28,7 @@ struct PageTitlePreferenceKey: PreferenceKey {
 // MARK: - TitleView
 
 struct TitleViewPreferenceKey: PreferenceKey {
-    static var defaultValue = Wrapper(value: EmptyView())
+    static var defaultValue = Wrapper(value: Text(""))
 
     static func reduce(value: inout Wrapper, nextValue: () -> Wrapper) {
         value = nextValue()
@@ -50,7 +50,7 @@ extension View {
 }
 
 public extension View {
-    func pageTitle(view: any View) -> some View {
+    func pageTitle(_ view: any View) -> some View {
         self.preference(key: TitleViewPreferenceKey.self, value: view.wrapped)
     }
 }
