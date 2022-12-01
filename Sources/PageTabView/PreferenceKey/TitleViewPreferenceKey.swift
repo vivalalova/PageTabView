@@ -17,11 +17,30 @@ struct TitleViewPreferenceKey: PreferenceKey {
     }
 }
 
-struct Wrapper: Equatable {
+struct Wrapper: Equatable, Identifiable {
+    var id = UUID()
+
     let value: any View
 
     static func == (lhs: Wrapper, rhs: Wrapper) -> Bool {
         false
+    }
+}
+
+struct Identified<Content>: Identifiable {
+    let id = UUID()
+    let index: Int
+    let value: Content
+}
+
+extension Array {
+    func identified() -> [Identified<Element>] {
+        var results: [Identified<Element>] = []
+        for (index, value) in self.enumerated() {
+            results.append(Identified(index: index, value: value))
+        }
+
+        return results
     }
 }
 

@@ -16,11 +16,11 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
     var numberOfPage: Int
     @Binding var offset: CGFloat
 
-    var content: () -> Content
+    var content: Content
 
     init(numberOfPage: Int, offset: Binding<CGFloat>, @ViewBuilder content: @escaping () -> Content) {
         self.numberOfPage = numberOfPage
-        self.content = content
+        self.content = content()
         self._offset = offset
     }
 
@@ -31,7 +31,7 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
         scrollView.showsHorizontalScrollIndicator = false
 
         let hostView = UIHostingController(rootView: HStack(spacing: 0) {
-            content()
+            content
         })
 
         hostView.view.translatesAutoresizingMaskIntoConstraints = false

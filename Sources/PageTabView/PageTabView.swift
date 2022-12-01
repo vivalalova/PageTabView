@@ -52,8 +52,11 @@ public extension PageTabView {
                     .environmentObject(model)
 
                 PageScrollView(numberOfPage: self.content.count, offset: self.$model.offset) {
-                    ForEach(0 ..< content.count) { index in
-                        content[index]
+                    ForEach(content.identified()) { item in
+                        let index = item.index
+                        let content = item.value
+
+                        content
                             .onPreferenceChange(TitleViewPreferenceKey.self) { v in
                                 self.titles[index] = AnyView(v.value)
                             }
