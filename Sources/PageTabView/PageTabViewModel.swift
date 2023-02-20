@@ -16,25 +16,17 @@ public extension PageTabView {
 
         @Published var offset: CGFloat = 0
         @Published public var page = 0
-//        var onPageUpdate: (Int) -> Void
 
         var bag = Set<AnyCancellable>()
 
         public
         init(onPageUpdate: @escaping (Int) -> Void = { _ in }) {
-//            self.onPageUpdate = onPageUpdate
-            $offset
+            self.$offset
                 .filter { [self] _ in self.width.isNormal }
                 .map { [self] in Int(round($0 / self.width)) }
                 .removeDuplicates()
                 .assign(to: \.page, on: self)
                 .store(in: &self.bag)
-
-//            $page
-//                .sink { [self] in
-//                    self.onPageUpdate($0)
-//                }
-//                .store(in: &self.bag)
         }
 
         public func scrollTo(page: Int) {
@@ -43,18 +35,6 @@ public extension PageTabView {
             }
 
             self.offset = CGFloat(page) * self.width
-        }
-
-        func onPress(index: Int, width: CGFloat) -> () -> Void {
-            return {
-                let offset = CGFloat(index) * width
-                if self.offset != offset {
-                    withAnimation(.easeInOut(duration: 0.1)) {
-                        self.offset = offset
-                        self.barOffset = offset / width
-                    }
-                }
-            }
         }
     }
 }

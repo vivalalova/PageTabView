@@ -16,11 +16,11 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
     var numberOfPage: Int
     @Binding var offset: CGFloat
 
-    var content: () -> Content
+    var content: Content
 
     init(numberOfPage: Int, offset: Binding<CGFloat>, @ViewBuilder content: @escaping () -> Content) {
         self.numberOfPage = numberOfPage
-        self.content = content
+        self.content = content()
         self._offset = offset
     }
 
@@ -31,7 +31,7 @@ struct PageScrollView<Content: View>: UIViewRepresentable {
         scrollView.showsHorizontalScrollIndicator = false
 
         let hostView = UIHostingController(rootView: HStack(spacing: 0) {
-            content()
+            content
         })
 
         hostView.view.translatesAutoresizingMaskIntoConstraints = false
@@ -93,6 +93,43 @@ extension PageScrollView {
 
             if scrollView.contentOffset.x != self.view.offset {
                 self.view.scrollTo(scrollView, x: page * scrollView.bounds.size.width)
+            }
+        }
+    }
+}
+
+struct PageScrollView_Previews: PreviewProvider {
+    @State static var offset: CGFloat = 0
+    static let numberOfPage = 2
+
+    @ViewBuilder
+    static func content() -> some View {
+        Text("page a")
+
+        Text("page b")
+    }
+
+    static var previews: some View {
+        VStack {
+            Text("offset: \(offset)")
+
+            GeometryReader { _ in
+
+                PageScrollView(numberOfPage: numberOfPage, offset: $offset) {
+                    HStack(spacing: 0) {
+                        content()
+                            .frame(maxWidth: .infinity)
+                    }
+                    .overlay(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .preference(key: TabPreferenceKey.self, value: proxy.frame(in: .global))
+                        }
+                    )
+                    .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
+                        self.offset = -offsetProxy.minX / CGFloat(numberOfPage)
+                    }
+                }
             }
         }
     }

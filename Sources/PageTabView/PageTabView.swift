@@ -10,50 +10,69 @@ import SwiftUI
 
 @available(iOS 14.0.0, *)
 public struct PageTabView: View {
-//    @StateObject var model = Model()
     @EnvironmentObject var model: Model
 
-//    @Environment(\.onPageUpdate) var onPageUpdate: (Int) -> Void
-
-    var titles: [AnyView] = []
-
+    @State var titles: [AnyView] = [AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text("")), AnyView(Text(""))]
     var content: [AnyView] = []
 
-    public init<C1: View, C2: View, V0: View, V1: View>(
-        @ViewBuilder titleView: @escaping () -> TupleView<(V0, V1)>,
-        @ViewBuilder content: @escaping () -> TupleView<(C1, C2)>
-    ) {
+    public init<C0: View>(@ViewBuilder content: @escaping () -> TupleView<C0>) {
+        let c = content().value
+        self.content = [AnyView(c)]
+    }
+
+    public init<C0: View, C1: View>(@ViewBuilder content: @escaping () -> TupleView<(C0, C1)>) {
         let c = content().value
         self.content = [AnyView(c.0), AnyView(c.1)]
-
-        let cv = titleView().value
-        self.titles = [AnyView(cv.0), AnyView(cv.1)]
-//        self.model.onPageUpdate = self.onPageUpdate
     }
 
-    func setup(_ frame: GeometryProxy) -> some View {
-        DispatchQueue.main.async {
-            if self.model.width != frame.size.width {
-                self.model.width = frame.size.width
-            }
-//            self.model.onPageUpdate = { [self] int in
-//                self.onPageUpdate(int)
-//            }
-        }
-
-        return EmptyView()
+    public init<C0: View, C1: View, C2: View>(@ViewBuilder content: @escaping () -> TupleView<(C0, C1, C2)>) {
+        let c = content().value
+        self.content = [AnyView(c.0), AnyView(c.1), AnyView(c.2)]
     }
 
-    public var body: some View {
+    public init<C0: View, C1: View, C2: View, C3: View>(@ViewBuilder content: @escaping () -> TupleView<(C0, C1, C2, C3)>) {
+        let c = content().value
+        self.content = [AnyView(c.0), AnyView(c.1), AnyView(c.2), AnyView(c.3)]
+    }
+
+    public init<C0: View, C1: View, C2: View, C3: View, C4: View>(@ViewBuilder content: @escaping () -> TupleView<(C0, C1, C2, C3, C4)>) {
+        let c = content().value
+        self.content = [AnyView(c.0), AnyView(c.1), AnyView(c.2), AnyView(c.3), AnyView(c.4)]
+    }
+}
+
+@available(iOS 14.0.0, *)
+public extension PageTabView {
+    var body: some View {
         GeometryReader { frame in
             VStack(spacing: 0) {
                 setup(frame)
 
-                HeadView(titles: titles, frame: frame)
-                    .environmentObject(model)
+                HeadView(count: self.content.count, titles: $titles, frame: frame)
 
-                ContentView(titles: titles, frame: frame, content: content)
-                    .environmentObject(model)
+                PageScrollView(numberOfPage: self.content.count, offset: self.$model.offset) {
+                    ForEach(content.identified()) { item in
+                        let index = item.index
+                        let content = item.value
+
+                        content
+                            .onPreferenceChange(TitleViewPreferenceKey.self) { v in
+                                self.titles[index] = AnyView(v.value)
+                            }
+                            .frame(maxWidth: .infinity)
+                    }
+                    // Subscribe ScrollView ContentOffset
+                    .overlay(
+                        GeometryReader { offsetProxy in
+                            Color.clear
+                                .preference(key: TabPreferenceKey.self, value: offsetProxy.frame(in: .global))
+                        }
+                    )
+                    // Then Set Offset
+                    .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
+                        self.model.barOffset = -offsetProxy.minX / CGFloat(content.count)
+                    }
+                }
             }
         }
     }
@@ -61,15 +80,26 @@ public struct PageTabView: View {
 
 @available(iOS 14.0.0, *)
 extension PageTabView {
+    private func setup(_ frame: GeometryProxy) -> some View {
+        DispatchQueue.main.async {
+            if self.model.width != frame.size.width {
+                self.model.width = frame.size.width
+            }
+        }
+
+        return EmptyView()
+    }
+
     struct HeadView: View {
         @EnvironmentObject var model: PageTabView.Model
 
-        var titles: [AnyView] = []
+        var count = 0
+        var titles: Binding<[AnyView]>
         var frame: GeometryProxy
 
         var body: some View {
             HStack(spacing: 0) {
-                ForEach(0 ..< self.titles.count) { index in
+                ForEach(0 ..< count) { index in
                     let title = self.titles[index]
                     if index == 0 {
                         Btn(index: index, view: title, frame: frame)
@@ -86,12 +116,14 @@ extension PageTabView {
             @EnvironmentObject var model: PageTabView.Model
 
             var index: Int
-            var view: AnyView
+            var view: Binding<AnyView>
             var frame: GeometryProxy
 
             var body: some View {
-                Button(action: self.model.onPress(index: index, width: self.frame.size.width)) {
-                    view.frame(maxWidth: .infinity, maxHeight: .infinity)
+                Button(action: { self.model.scrollTo(page: index) }) {
+                    view
+                        .wrappedValue
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         }
@@ -102,39 +134,9 @@ extension PageTabView {
             var body: some View {
                 Capsule()
                     .foregroundColor(.accentColor)
+                    .animation(.easeOut(duration: 0.1), value: self.model.barOffset)
                     .offset(x: self.model.barOffset)
                     .frame(height: 3)
-            }
-        }
-    }
-
-    struct ContentView: View {
-        @EnvironmentObject var model: PageTabView.Model
-
-        var titles: [AnyView] = []
-        var frame: GeometryProxy
-
-        var content: [AnyView]
-
-        var body: some View {
-            PageScrollView(numberOfPage: self.titles.count, offset: self.$model.offset) {
-                HStack(spacing: 0) {
-                    ForEach(0 ..< content.count) { i in
-                        content[i]
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-                // Subscribe ScrollView ContentOffset
-                .overlay(
-                    GeometryReader { offsetProxy in
-                        Color.clear
-                            .preference(key: TabPreferenceKey.self, value: offsetProxy.frame(in: .global))
-                    }
-                )
-                // Then Set Offset
-                .onPreferenceChange(TabPreferenceKey.self) { offsetProxy in
-                    self.model.barOffset = -offsetProxy.minX / CGFloat(titles.count)
-                }
             }
         }
     }
@@ -146,37 +148,66 @@ struct PageTabView_Previews: PreviewProvider {
 
     static var previews: some View {
         PageTabView {
-            Text("Page1").foregroundColor(.red)
-            Text("Page2").foregroundColor(.green)
-        } content: {
-            List {
-                Text("Page 1")
-
-                Button("Green") {
-                    pageModel.scrollTo(page: 1)
-                }
-                .accentColor(.blue)
-            }.edgesIgnoringSafeArea(.bottom)
-
-            VStack {
-                Text("Page 1")
-                Button("Red") {
-                    pageModel.scrollTo(page: 0)
-                }
-                .accentColor(.blue)
-            }
+            Page(0, color: .red)
+            Page(1, color: .blue)
+            Page(2, color: .yellow)
+            Page(3, color: .green)
         }
         .environmentObject(pageModel)
         .accentColor(.purple)
         .edgesIgnoringSafeArea(.bottom)
-        .overlay(alignment: .bottom) {
+        .overlay(alignment: .bottomTrailing) {
             Text("\(pageModel.page)")
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
+                .frame(width: 44, height: 44)
                 .padding()
-                .background(.blue)
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .background(.yellow)
+                .foregroundColor(.black)
+                .font(.title.bold())
+                .clipShape(Circle())
                 .padding()
+                .shadow(radius: 8)
+        }
+    }
+    
+    struct Page: View {
+        var index: Int
+        var color: Color
+
+        @EnvironmentObject var pageModel: PageTabView.Model
+
+        internal init(_ index: Int, color: Color) {
+            self.index = index
+            self.color = color
+        }
+
+        var body: some View {
+            VStack {
+                Text("Page \(index)")
+
+                HStack {
+                    Button("prev page") {
+                        pageModel.scrollTo(page: (index + 4 - 1) % 4)
+                    }
+
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    Button("next page") {
+                        pageModel.scrollTo(page: (index + 1) % 4)
+                    }
+                }
+                .accentColor(color)
+                .padding()
+            }
+            .pageTitleView {
+                let effect: CGFloat = pageModel.page == index ? 1.2 : 1
+
+                Text("Page \(index)")
+                    .foregroundColor(color)
+                    .opacity(self.pageModel.page == index ? 1 : 0.3)
+                    .scaleEffect(x: effect, y: effect)
+                    .animation(.default, value: pageModel.page)
+            }
         }
     }
 }

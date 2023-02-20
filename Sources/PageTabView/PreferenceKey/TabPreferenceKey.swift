@@ -7,12 +7,20 @@
 
 import SwiftUI
 
-@available(iOS 13.0.0, *)
-public
 struct TabPreferenceKey: PreferenceKey {
     public static var defaultValue = CGRect()
 
     public static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
+    }
+}
+
+struct PageTitlePreferenceKey: PreferenceKey {
+    public typealias T = any View
+
+    public static var defaultValue: T = EmptyView()
+
+    public static func reduce(value: inout T, nextValue: () -> T) {
         value = nextValue()
     }
 }
