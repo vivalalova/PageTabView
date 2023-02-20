@@ -148,45 +148,66 @@ struct PageTabView_Previews: PreviewProvider {
 
     static var previews: some View {
         PageTabView {
-            List {
-                Text("Page 1")
-
-                Button("Green") {
-                    pageModel.scrollTo(page: 1)
-                }
-                .accentColor(.green)
-            }
-            .edgesIgnoringSafeArea(.bottom)
-            .pageTitleView {
-                Text("Page1").foregroundColor(.red)
-            }
-
-            VStack {
-                Text("Page 2")
-                Button("Red") {
-                    pageModel.scrollTo(page: 0)
-                }
-                .accentColor(.red)
-            }
-            .pageTitleView {
-                Text("Page2")
-                    .foregroundColor(.green)
-                    .overlay(Color.red.frame(width: 4, height: 4), alignment: .topTrailing)
-            }
+            Page(0, color: .red)
+            Page(1, color: .blue)
+            Page(2, color: .yellow)
+            Page(3, color: .green)
         }
         .environmentObject(pageModel)
         .accentColor(.purple)
         .edgesIgnoringSafeArea(.bottom)
-        .overlay(alignment: .bottom) {
+        .overlay(alignment: .bottomTrailing) {
             Text("\(pageModel.page)")
-                .frame(maxWidth: .infinity)
+                .frame(width: 44, height: 44)
                 .padding()
                 .background(.yellow)
                 .foregroundColor(.black)
                 .font(.title.bold())
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .clipShape(Circle())
                 .padding()
                 .shadow(radius: 8)
+        }
+    }
+    
+    struct Page: View {
+        var index: Int
+        var color: Color
+
+        @EnvironmentObject var pageModel: PageTabView.Model
+
+        internal init(_ index: Int, color: Color) {
+            self.index = index
+            self.color = color
+        }
+
+        var body: some View {
+            VStack {
+                Text("Page \(index)")
+
+                HStack {
+                    Button("prev page") {
+                        pageModel.scrollTo(page: (index + 4 - 1) % 4)
+                    }
+
+                    Spacer()
+                    Divider()
+                    Spacer()
+                    Button("next page") {
+                        pageModel.scrollTo(page: (index + 1) % 4)
+                    }
+                }
+                .accentColor(color)
+                .padding()
+            }
+            .pageTitleView {
+                let effect: CGFloat = pageModel.page == index ? 1.2 : 1
+
+                Text("Page \(index)")
+                    .foregroundColor(color)
+                    .opacity(self.pageModel.page == index ? 1 : 0.3)
+                    .scaleEffect(x: effect, y: effect)
+                    .animation(.default, value: pageModel.page)
+            }
         }
     }
 }
