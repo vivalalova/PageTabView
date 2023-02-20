@@ -7,10 +7,7 @@ Page Tab
 ### Usage
 
 ```swift
-PageTabView {
-    Text("Page1").foregroundColor(.red)
-    Text("Page2").foregroundColor(.green)
-} content: {
+PageTabView {    
     List {
         Text("Page 1")
 
@@ -18,7 +15,11 @@ PageTabView {
             pageModel.scrollTo(page: 1)
         }
         .accentColor(.blue)
-    }.edgesIgnoringSafeArea(.bottom)
+    }
+    .edgesIgnoringSafeArea(.bottom)
+    .pageTitleView {
+        Text("Page1").foregroundColor(.red)
+    }
 
     VStack {
         Text("Page 1")
@@ -26,6 +27,9 @@ PageTabView {
             pageModel.scrollTo(page: 0)
         }
         .accentColor(.blue)
+    }
+    .pageTitleView {
+        Text("Page2").foregroundColor(.green)
     }
 }
 .environmentObject(pageModel)
