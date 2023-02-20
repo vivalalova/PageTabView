@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+public
 struct TabPreferenceKey: PreferenceKey {
     public static var defaultValue = CGRect()
 
@@ -15,6 +16,7 @@ struct TabPreferenceKey: PreferenceKey {
     }
 }
 
+public
 struct PageTitlePreferenceKey: PreferenceKey {
     public typealias T = any View
 
