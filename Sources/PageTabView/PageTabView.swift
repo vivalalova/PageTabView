@@ -48,7 +48,7 @@ public extension PageTabView {
             VStack(spacing: 0) {
                 setup(frame)
 
-                HeadView(count: self.content.count, titles: titles, frame: frame)
+                HeadView(count: self.content.count, titles: $titles, frame: frame)
                     .environmentObject(model)
 
                 PageScrollView(numberOfPage: self.content.count, offset: self.$model.offset) {
@@ -95,7 +95,7 @@ extension PageTabView {
         @EnvironmentObject var model: PageTabView.Model
 
         var count = 0
-        var titles: [AnyView] = []
+        var titles: Binding<[AnyView]>
         var frame: GeometryProxy
 
         var body: some View {
@@ -117,12 +117,15 @@ extension PageTabView {
             @EnvironmentObject var model: PageTabView.Model
 
             var index: Int
-            var view: AnyView
+            var view: Binding<AnyView>
             var frame: GeometryProxy
 
             var body: some View {
                 Button(action: { self.model.scrollTo(page: index) }) {
-                    view.frame(maxWidth: .infinity, maxHeight: .infinity)
+                    view
+                        .wrappedValue
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .environmentObject(model)
                 }
             }
         }
@@ -161,7 +164,7 @@ struct PageTabView_Previews: PreviewProvider {
             }
 
             VStack {
-                Text("Page 1")
+                Text("Page 2")
                 Button("Red") {
                     pageModel.scrollTo(page: 0)
                 }

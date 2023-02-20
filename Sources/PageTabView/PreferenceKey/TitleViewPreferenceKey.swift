@@ -15,17 +15,25 @@ struct TitleViewPreferenceKey: PreferenceKey {
     static func reduce(value: inout Wrapper, nextValue: () -> Wrapper) {
         value = nextValue()
     }
-}
 
-struct Wrapper: Equatable, Identifiable {
-    var id = UUID()
+    struct Wrapper: Equatable, Identifiable {
+        var id = UUID()
 
-    let value: any View
+        let value: any View
 
-    static func == (lhs: Wrapper, rhs: Wrapper) -> Bool {
-        false
+        static func == (lhs: Wrapper, rhs: Wrapper) -> Bool {
+            false
+        }
     }
 }
+
+public extension View {
+    func pageTitleView<Content: View>(@ViewBuilder _ view: () -> Content) -> some View {
+        preference(key: TitleViewPreferenceKey.self, value: TitleViewPreferenceKey.Wrapper(value: view()))
+    }
+}
+
+// MARK: - Array<Identified>
 
 struct Identified<Content>: Identifiable {
     let id = UUID()
@@ -41,11 +49,5 @@ extension Array {
         }
 
         return results
-    }
-}
-
-public extension View {
-    func pageTitleView<Content: View>(@ViewBuilder _ view: () -> Content) -> some View {
-        preference(key: TitleViewPreferenceKey.self, value: Wrapper(value: view()))
     }
 }
