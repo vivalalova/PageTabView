@@ -49,7 +49,6 @@ public extension PageTabView {
                 setup(frame)
 
                 HeadView(count: self.content.count, titles: $titles, frame: frame)
-                    .environmentObject(model)
 
                 PageScrollView(numberOfPage: self.content.count, offset: self.$model.offset) {
                     ForEach(content.identified()) { item in
@@ -125,7 +124,6 @@ extension PageTabView {
                     view
                         .wrappedValue
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .environmentObject(model)
                 }
             }
         }
